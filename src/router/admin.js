@@ -1,0 +1,165 @@
+import LayoutBlank from '@/components/global/Layout/Blank.vue';
+
+export default [
+  {
+    path: '/admin',
+    component: LayoutBlank,
+    meta: {
+      authRequired: true,
+      elevatedRequired: true,
+      layout: {
+        component: 'LayoutAdmin',
+      },
+      sidebar: {
+        component: 'DrawerAdmin',
+        visible: true,
+      },
+    },
+    children: [
+      {
+        path: '',
+        name: 'adminHome',
+        component: () => import(/* webpackChunkName: "adminHome" */ '@/router/views/admin/Home.vue'),
+      },
+      {
+        path: 'profile',
+        name: 'adminProfile',
+        component: () => import(/* webpackChunkName: "adminProfile" */ '@/router/views/UserProfile.vue'),
+        meta: {
+          sidebar: {
+            visible: false,
+          },
+        },
+      },
+      {
+        path: 'manage',
+        component: LayoutBlank,
+        children: [
+          {
+            path: '',
+            name: 'adminManage',
+            component: () => import(/* webpackChunkName: "adminManage" */ '@/router/views/admin/Manage.vue'),
+          },
+          {
+            path: 'users',
+            name: 'adminUsersList',
+            component: () => import(/* webpackChunkName: "adminUsersList" */ '@/router/views/admin/UsersList.vue'),
+            meta: {
+              roleRequired: 'admin',
+            },
+          },
+          {
+            path: 'payPeriods',
+            name: 'adminDiaryPayPeriodsList',
+            component: () => import(/* webpackChunkName: "adminDiaryPayPeriodsList" */ '@/router/views/admin/DiaryPayPeriods/List.vue'),
+          },
+          {
+            path: 'paymentGroups',
+            name: 'adminPaymentGroupsList',
+            component: () => import(/* webpackChunkName: "adminPaymentGroupsList" */ '@/router/views/admin/PaymentGroups/List.vue'),
+          },
+          {
+            path: 'participantCategories',
+            name: 'adminParticipantCategoriesList',
+            component: () => import(/* webpackChunkName: "adminParticipantCategoriesList" */ '@/router/views/admin/ParticipantCategories/List.vue'),
+          },
+        ],
+      },
+      {
+        path: 'dictionary',
+        component: LayoutBlank,
+        children: [
+          {
+            path: '',
+            name: 'adminDictionaryWordsList',
+            component: () => import(/* webpackChunkName: "adminDictionaryWordsList" */ '@/router/views/admin/DictionaryWords/List.vue'),
+          },
+        ],
+      },
+      {
+        path: 'diaries',
+        component: LayoutBlank,
+        children: [
+          {
+            path: '',
+            name: 'adminDiariesList',
+            component: () => import(/* webpackChunkName: "adminDiariesList" */ '@/router/views/admin/Diaries/List.vue'),
+          },
+          {
+            path: 'upload',
+            name: 'adminDiaryUpload',
+            component: () => import(/* webpackChunkName: "adminDiariesCreate" */ '@/router/views/admin/Diaries/Create.vue'),
+          },
+          {
+            path: ':id',
+            name: 'adminDiaryDetails',
+            component: () => import(/* webpackChunkName: "adminDiariesDetail" */ '@/router/views/admin/Diaries/Detail.vue'),
+            props: true,
+          },
+        ],
+      },
+      {
+        path: 'profiles',
+        component: LayoutBlank,
+        children: [
+          {
+            path: '',
+            name: 'adminProfilesList',
+            component: () => import(/* webpackChunkName: "adminProfilesList" */ '@/router/views/admin/Profiles/List.vue'),
+          },
+          {
+            path: 'new',
+            name: 'adminProfileUpload',
+            component: () => import(/* webpackChunkName: "adminProfilesCreate" */ '@/router/views/admin/Profiles/Create.vue'),
+          },
+          {
+            path: ':id',
+            name: 'adminProfileDetails',
+            component: () => import(/* webpackChunkName: "adminProfilesDetail" */ '@/router/views/admin/Profiles/Detail.vue'),
+            props: true,
+          },
+        ],
+      },
+      {
+        path: 'subjects',
+        component: LayoutBlank,
+        children: [
+          {
+            path: '',
+            name: 'adminSubjectsList',
+            component: () => import(/* webpackChunkName: "adminSubjectsList" */ '@/router/views/admin/Subjects/List.vue'),
+          },
+          {
+            path: ':id',
+            name: 'adminSubjectDetails',
+            component: () => import(/* webpackChunkName: "adminSubjectsDetail" */ '@/router/views/admin/Subjects/Detail.vue'),
+            props: true,
+          },
+        ],
+      },
+      {
+        path: 'reports',
+        component: LayoutBlank,
+        children: [
+          {
+            path: '',
+            name: 'adminReportsList',
+            component: () => import(/* webpackChunkName: "adminReportsList" */ '@/router/views/admin/Reports/List.vue'),
+          },
+          {
+            path: 'duration-summaries',
+            name: 'adminReportsDurationSummary',
+            component: () => import(/* webpackChunkName: "adminReportsDurationSummary" */ '@/router/views/admin/Reports/DurationSummary.vue'),
+            props: true,
+          },
+          {
+            path: 'content-search',
+            name: 'adminReportsContentSearch',
+            component: () => import(/* webpackChunkName: "adminReportsContentSearch" */ '@/router/views/admin/Reports/ContentSearch.vue'),
+            props: true,
+          },
+        ],
+      },
+    ],
+  },
+];

@@ -1,0 +1,17 @@
+version: "3.4"
+networks:
+  default:
+    external:
+      name: backend
+
+services:
+  web:
+    image: (registry-host:registry-port)/mcd/vanilla-frontend:latest
+    container_name: mcd-vanilla-frontend
+    restart: unless-stopped
+    volumes:
+      - /storage/mcd-vanilla:/opt/storage
+    expose:
+      - 80
+    env_file:
+      - .env

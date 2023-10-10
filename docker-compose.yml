@@ -1,0 +1,20 @@
+version: "3.4"
+networks:
+  default:
+    external:
+      name: backend
+      
+services:
+  web:
+    build:
+      context: .
+      network: backend
+    image: mcd-vanilla-frontend:latest
+    container_name: mcd-vanilla-frontend
+    restart: unless-stopped
+    volumes:
+      - ../storage:/opt/storage
+    expose:
+      - 80
+    env_file:
+      - .env

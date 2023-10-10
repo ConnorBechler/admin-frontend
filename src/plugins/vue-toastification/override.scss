@@ -1,0 +1,23 @@
+@import "./_variables-override";
+@import "vue-toastification/src/scss/_toastContainer";
+@import "vue-toastification/src/scss/_toast";
+@import "vue-toastification/src/scss/_closeButton";
+@import "vue-toastification/src/scss/_progressBar";
+@import "vue-toastification/src/scss/_icon";
+@import "vue-toastification/src/scss/animations/_bounce";
+
+.#{$vt-namespace}__toast {
+  padding: 12px 24px;
+}
+
+.#{$vt-namespace}__container {
+  @media #{$vt-not-mobile} {
+    &.top-left,
+    &.top-right,
+    &.top-center {
+      top: .25em;
+    }
+  }
+}
+
+

@@ -1,0 +1,129 @@
+div.error--text *{
+  color: red !important;
+}
+div.warning--text *{
+  color: orange !important;
+}
+div.success--text *{
+  color: #048207 !important;
+}
+
+div.error--text:not(:first-of-type),
+div.warning--text:not(:first-of-type) {
+  margin-top: 5px;
+}
+div.error--text:not(:last-of-type),
+div.warning--text:not(:last-of-type) {
+  margin-bottom: 20px;
+}
+
+section.container.continuePage {
+  .v-stepper__label {
+    text-align: center;
+  }
+  * .v-card__actions {
+    padding-top: 25px;
+  }
+  * h3.headline {
+    .stepCardTitle {
+      margin-top: 10px;
+      margin-bottom: 25px;
+    }
+  }
+}
+
+.v-snack {
+  .v-icon:not(:first-child) {
+    color: rgba(white, .5);
+    margin-left: 20px;
+  }
+  .v-icon:first-child {
+    margin-right: 20px;
+  }
+  .v-snack__content {
+    height: auto;
+    .message {
+      text-align: center;
+      width: 100%;
+    }
+  }
+  .v-snack__wrapper {
+    // border-radius: $border-radius-base + 1;
+  }
+}
+
+.spacer-text, .spacer-subtext {
+  overflow: hidden;
+  text-align: center;
+}
+.spacer-text:before, .spacer-text:after {
+  border-top: 1px solid #000;
+  border-bottom: 1px solid #000;
+  content: "";
+  display: inline-block;
+  height: .1em;
+  position: relative;
+  vertical-align: middle;
+  width: 50%;
+  margin-bottom: .15em;
+}
+.spacer-subtext:before, .spacer-subtext:after {
+  border-top: 1px dotted #000;
+  border-bottom: 1px dotted #000;
+  content: "";
+  display: inline-block;
+  height: .1em;
+  position: relative;
+  vertical-align: middle;
+  width: 50%;
+  margin-bottom: .15em;
+}
+.spacer-text:before, .spacer-subtext:before {
+    right: 0.5em;
+    margin-left: -50%;
+}
+.spacer-text:after, .spacer-subtext:after {
+    left: 0.5em;
+    margin-right: -50%;
+}
+
+.formBlock > .disabled > *:not(.controls),
+.formBlock > * > .disabled > *:not(.controls) {
+  text-decoration: line-through;
+  opacity: 0.5;
+}
+.v-card__title.programCard.headline {
+  word-break: normal;
+}
+
+.theme--light.v-data-table tbody {
+  tr:nth-of-type(even):not(.v-data-table__expanded) {
+    background-color: rgba(0, 0, 0, .1);
+  }
+  tr:hover:not(.v-data-table__selected):not(.v-data-table__expanded) {
+    background-color: rgba(0, 0, 0, .25) !important;
+  }
+}
+
+.input-flip-flop .v-input__slot {
+  flex-direction: row-reverse;
+  justify-content: flex-end;
+  .v-application--is-ltr & {
+    .v-input--selection-controls__input {
+      margin-right: 0;
+      margin-left: 8px;
+    }
+  }
+  .v-application--is-rtl & {
+    .v-input--selection-controls__input {
+      margin-left: 0;
+      margin-right: 8px;
+    }
+  }
+}
+
+.v-data-table__progress [role='progressbar'] {
+  position: absolute;
+  width: 97%;
+}
+// @import '~vuetify/src/styles/main.sass';

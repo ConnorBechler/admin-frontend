@@ -1,0 +1,28 @@
+$body-font-family: 'Gotham SSm B','Gotham SSm A','Helvetica Neue', Arial, Sans-Serif;
+
+$msu: (
+  "base":                 #285c50,
+  "lighten-1":            #64b3a2,
+  "darken-1":             #18453b,
+  "darken-2":             #113d34,
+  "accent-green":         #0db14b,
+  "accent-grey":          #97a2a2,
+  "accent-orange":        #f08521,
+  "accent-teal":          #008183,
+  "accent-purple":        #909ab7,
+  "accent-dark-grey":     #535054,
+  "accent-lime":          #d1de3f,
+  "accent-beige":         #e8d9b5,
+  "accent-brown":         #c89a58,
+  "accent-dark-green":    #94ae4a,
+  "accent-dark-purple":   #6e005f,
+  "accent-dark-orange":   #cb5a28,
+  "light-grey":           #cbd1d1,
+  "dark-grey":            #6d7373,
+  "success-1":            #048207,
+  "hover-1":              #6cb7a5
+);
+
+$colors : (
+  "msu": $msu
+);
