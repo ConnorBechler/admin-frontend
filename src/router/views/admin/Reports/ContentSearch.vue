@@ -211,7 +211,7 @@ export default {
     },
     generateDownload({
       type = 'csv',
-      filename = `MCD search - ${this.searchString.replace(/[^\w\s]/gi, '')}`
+      filename = `${this.$appStrings('subjectPrefix')} search - ${this.searchString.replace(/[^\w\s]/gi, '')}`
       }) {
       const ret = [];
       const headers = [
