@@ -398,7 +398,7 @@ export default {
           permission_share: null,
           payment_optout: null,
           paymentGroup: null,
-          age_category: null,
+          participant_category: null,
           ethnicity: null,
           gender: null,
           locationGrowingUp: null,

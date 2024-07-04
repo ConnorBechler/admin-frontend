@@ -168,26 +168,24 @@
                   </v-text-field>
                 </ValidationProvider>
               </v-col>
-              <FeathersVuexFind service="participantCategories" ref="age_categories" :query="{ active: 1, hidden: 0, $sort: { sortOrder: 1 } }">
+              <FeathersVuexFind service="participantCategories" ref="participant_categories" :query="{ active: 1, hidden: 0, $sort: { sortOrder: 1 } }">
                 <v-col class="py-2" cols="12" md="4" slot-scope="{ items: participantCategories }">
                   <ValidationProvider
-                    ref="age_category"
-                    name="Age Category"
+                    ref="participant_category"
+                    name="Participant Category"
                     :rules="clone.metadata.processingStatus === 'confirmed' ? 'required' : ''"
                     v-slot="{ errors }"
                   >
                     <v-select
-                      :id="`${clone.id || clone.__id}-${prependField}age_category`"
-                      v-model="clone.metadata[prependField + 'age_category']"
+                      :id="`${clone.id || clone.__id}-${prependField}participant_category`"
+                      v-model="clone.metadata[prependField + 'participant_category']"
                       :items="participantCategories"
                       item-text="name"
                       item-value="shortName"
                       :disabled="parentDisabled || selfDisabled"
                       :error-messages="errors"
-                      name="age_category"
-                      label="Age Category"
-                      :hint="age ? `${age} years old` : ' '"
-                      persistent-hint
+                      name="participant_category"
+                      label="Participant Category"
                       :autocomplete="(autofill) ? '' : 'nope'">
                     </v-select>
                   </ValidationProvider>
@@ -568,7 +566,6 @@
 
 <script>
 /* eslint-disable */
-import { AgeFromDateString } from 'age-calculator';
 import { extend } from 'vee-validate';
 import { makeFindMixin } from 'feathers-vuex';
 import RichTextEditor from 'vue-trumbowyg/src';
@@ -812,13 +809,6 @@ export default {
   computed: {
     paymentGroupsParams() {
       return { query: { $sort: { name: 1 } } };
-    },
-    age() {
-      if (this.clone.metadata.dateOfBirth) {
-        return new AgeFromDateString(this.clone.metadata.dateOfBirth).age;
-      } else {
-        return false;
-      }
     },
     showCodedUpdated() {
       return this.codedUpdatedAt && this.codedUpdatedBy && this.selectedTab === 2;

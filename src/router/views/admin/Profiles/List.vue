@@ -7,7 +7,7 @@
             <v-data-table
               :headers="[
                 {text: 'SID', value: 'subjectId', width: '12%'},
-                {text: 'Group', value: 'age_category', width: '10%'},
+                {text: 'Group', value: 'participant_category', width: '10%'},
                 {text: 'Share', value: 'permission_share', width: '10%', align: 'center'},
                 {text: '$$', value: 'payment_optout', width: '10%', align: 'center'},
                 {text: '', value: 'hidden', width: '5%', align: ($vuetify.breakpoint.smAndDown || !showHiddenProfiles) ? ' d-none' : ''},
@@ -36,8 +36,8 @@
                     </v-switch>
                   </v-toolbar>
                 </template>
-                <template v-slot:item.age_category="{ item }">
-                  {{ (item.metadata.age_category) ? item.metadata.age_category : '' }}
+                <template v-slot:item.participant_category="{ item }">
+                  {{ (item.metadata.participant_category) ? item.metadata.participant_category : '' }}
                 </template>
                 <template v-slot:item.permission_share="{ item }">
                   {{ (item.metadata.permission_share) ? 'Y' : 'N' }}

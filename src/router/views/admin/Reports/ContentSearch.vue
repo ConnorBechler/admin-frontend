@@ -6,7 +6,7 @@
           :headers="[
             {text: 'SID', value: 'subjectId', align: 'left', width: '135px'},
             {text: 'Date', value: 'metadata.diaryDate', align: 'left', width: '125px'},
-            {text: 'Category', value: 'subjectMetadata.age_category', align: 'left'},
+            {text: 'Category', value: 'subjectMetadata.participant_category', align: 'left'},
             {text: 'Start', value: 'startTime', align: 'right', sortable: false},
             {text: 'End', value: 'endTime', align: 'center', sortable: false},
             {text: 'Content', value: 'content', align: 'left', sortable: false},
@@ -92,8 +92,8 @@
                 </v-toolbar>
               </span>
             </template>
-            <template v-slot:item.subjectMetadata.age_category="{ item }">
-              {{ (item && item.subjectMetadata && item.subjectMetadata.age_category) ? item.subjectMetadata.age_category : '' }}
+            <template v-slot:item.subjectMetadata.participant_category="{ item }">
+              {{ (item && item.subjectMetadata && item.subjectMetadata.participant_category) ? item.subjectMetadata.participant_category : '' }}
             </template>
             <template v-slot:item.actions="{ item }">
               <v-btn
@@ -234,7 +234,7 @@ export default {
           `${reportLine.metadata.diaryDate} #${reportLine.metadata.sequence.toString().padStart(2, 0)}`,
           reportLine.metadata.duration,
           reportLine.metadata.editingStatus,
-          reportLine.subjectMetadata.age_category,
+          reportLine.subjectMetadata.participant_category,
           reportLine.startTime,
           reportLine.endTime,
           reportLine.content,

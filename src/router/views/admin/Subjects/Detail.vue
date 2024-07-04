@@ -56,7 +56,7 @@
                 SID: <span v-if="currentSubject.shortcode" class="font-weight-bold">{{ currentSubject.shortcode }}</span>
                 <v-btn v-else small class="msu light-grey" @click="showEditor = true;">Edit to Add SID</v-btn>
                 <br>
-                Group: <span class="font-weight-bold">{{ currentSubject.metadata.age_category }}</span><br>
+                Group: <span class="font-weight-bold">{{ currentSubject.metadata.participant_category }}</span><br>
                 Signed Up: {{ currentSubject.createdAt | moment('MMM D YYYY @ h:mm A')}}<br>
                 <v-select
                   :id="`${currentSubject.id}-processingStatus`"

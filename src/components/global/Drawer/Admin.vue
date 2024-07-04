@@ -76,8 +76,8 @@ export default {
           path: '/admin/manage',
           children: [
             {
-              text: 'Age Groups',
-              icon: 'fa-birthday-cake',
+              text: 'Participant Categories',
+              icon: 'fa-people-group',
               route: 'adminParticipantCategoriesList',
             },
             {
