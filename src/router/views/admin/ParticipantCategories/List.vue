@@ -6,7 +6,7 @@
           :headers="[
             {text: 'Name', value: 'name'},
             {text: 'Short', value: 'shortName'},
-            {text: 'Active?', value: 'active', width: '55px', align: 'left', sortable: false},
+            {text: 'Enabled?', value: 'active', width: '55px', align: 'left', sortable: false},
             {text: '', value: 'actions', align: 'end', sortable: false},
             {text: '', value: 'hidden', width: '5%', align: ($vuetify.breakpoint.smAndDown || !showHiddenParticipantCategories) ? ' d-none' : '', sortable: false},
           ]"

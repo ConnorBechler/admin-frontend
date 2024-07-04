@@ -114,7 +114,7 @@ router.beforeEach((to, from, next) => {
       .then((validUser) => {
         if (validUser) {
           if (roleRequired) {
-            (store.getters['auth/hasRole'](requiredRole)) ? next() : throwRoleError(requiredRole);
+            (store.getters['auth/hasRole'](requiredRole) || store.getters['auth/isAdmin']) ? next() : throwRoleError(requiredRole);
           }
           else if (elevatedRequired) {
             if (store.getters['auth/isElevated']) {

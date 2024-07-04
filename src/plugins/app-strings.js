@@ -4,6 +4,7 @@ const appStrings = {
   appName: 'APP NAME',
   // this must match FORM_SECRET in backend .env
   formSecret: 'GenerateARealFormSecretAfterInstall',
+  appUrl: 'https://your-actual-url-here',
 };
 
 appStrings.install = () => {

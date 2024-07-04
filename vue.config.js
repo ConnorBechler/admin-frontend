@@ -41,7 +41,7 @@ module.exports = {
       },
     },
     disableHostCheck: true,
-    contentBase: '../storage/stream',
+    contentBase: `${process.env.STORAGE_PATH}/stream`,
     contentBasePublicPath: '/audio',
   },
   productionSourceMap: false,

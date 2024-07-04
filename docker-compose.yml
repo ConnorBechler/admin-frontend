@@ -13,7 +13,7 @@ services:
     container_name: mcd-vanilla-frontend
     restart: unless-stopped
     volumes:
-      - ../storage:/opt/storage
+      - ${STORAGE_PATH}:/opt/storage
     expose:
       - 80
     env_file:

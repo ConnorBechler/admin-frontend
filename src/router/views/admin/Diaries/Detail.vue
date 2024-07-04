@@ -201,13 +201,21 @@
                               >
                               <template v-slot:append-outer>
                                 <v-btn
+                                  :id="`${currentDiary.id}-audioDownloadBtn`"
                                   small
                                   class="controls-row mr-2"
-                                  @click.native.stop="selectedAudioDownloadOption.type === 'original' ? downloader('/api/download/' + recording[0].id) : convertAudio(selectedAudioDownloadOption)"
-                                  :loading="isDownloading"
-                                  :disabled="!selectedAudioDownloadOption.type || isDownloading || fileDownloadBtn.disabled"
-                                  :color="fileDownloadBtn.color">
-                                  Download
+                                  style="width: 10em"
+                                  @click.native.stop="selectedAudioDownloadOption.type === 'original' ? downloader('/api/download/' + recording[0].id, currentDiary.id) : convertAudio(selectedAudioDownloadOption)"
+                                  :loading="downloadBtnSettings[currentDiary.id]?.isDownloading || downloadBtnDefaults.disabled"
+                                  :disabled="!selectedAudioDownloadOption.type
+                                    || downloadBtnSettings[currentDiary.id]?.isDownloading
+                                    || downloadBtnSettings[currentDiary.id]?.disabled
+                                    || downloadBtnDefaults.disabled"
+                                  :color="downloadBtnSettings[currentDiary.id]?.color || downloadBtnDefaults.color">
+                                  <v-icon v-if="downloadBtnSettings[currentDiary.id]?.icon" small v-text="downloadBtnSettings[currentDiary.id]?.icon"></v-icon>
+                                  <span v-else>
+                                    {{ downloadBtnSettings[currentDiary.id]?.text || downloadBtnDefaults.text}}
+                                  </span>
                                 </v-btn>
                               </template>
                             </v-select>
@@ -230,6 +238,27 @@
               <v-card-title primary-title class="msu dark-grey text-center white--text">
                 <h3>Transcripts</h3>
                 <v-spacer></v-spacer>
+                <v-btn v-if="recording.length"
+                  class="black--text mr-5"
+                  style="width: 19em;"
+                  :color="fileUploadBtn.color"
+                  :small="$vuetify.breakpoint.smAndDown"
+                  @click.stop="$refs.fileInput.click();"
+                  :loading="isUploading"
+                  :disabled="isUploading">
+                  <v-icon v-if="fileUploadBtn.icon" small class="mr-2" v-text="fileUploadBtn.icon"></v-icon>
+                  {{ fileUploadBtn.text }}
+                  <span slot="loader">
+                    {{ uploadProgress }}%
+                  </span>
+                </v-btn>
+                <input
+                  ref="fileInput"
+                  class="d-none"
+                  type="file"
+                  @change="importNewTranscript(recording[0].id)"
+                  :key="`${currentDiary.id}-${fileInputKey}`"
+                >
                 <v-btn v-if="recording.length" class="white black--text" :small="$vuetify.breakpoint.smAndDown" @click.stop="requestNewTranscript(recording[0].id)" :loading="transcriptIsRunning">
                   <v-icon small class="mr-2">fa-cloud-download-alt</v-icon>
                   Regenerate
@@ -245,6 +274,7 @@
                       </v-col>
                     </v-row>
                     <v-expansion-panels
+                      v-model="transcriptPanelsExpanded"
                       v-else
                       :popout="($vuetify.breakpoint.smAndDown) ? false : true">
                       <v-expansion-panel v-for="(transcript, idx) in transcripts" :key="`${recording[0].id}-transcripts-${idx}`">
@@ -252,7 +282,11 @@
                           <v-row class="pb-5">
                             <v-col cols="12" sm="6">
                               #{{ transcript.revision }} -
-                              <span v-if="transcript.status === 0">
+                              <span v-if="transcript.metadata.locked" class="font-weight-bold">
+                                Locked
+                                <v-icon small class="black--text">fa-lock</v-icon>
+                              </span>
+                              <span v-else-if="transcript.status === 0">
                                 Pending...
                               </span>
                               <span v-else-if="transcript.status === 1">
@@ -262,10 +296,10 @@
                                 No audio detected
                               </span>
                               <span v-else-if="transcript.status === 99">
-                                Processed
+                                {{ transcript.metadata.imported ? 'Imported from file' : 'Processed'}}
                               </span>
                               <span v-else>
-                                Error <a @click.stop="removeTranscript(transcript)" style="color: red; text-decoration: underline;">Remove</a> and Regenerate
+                                Error <a @click.stop="transcript.metadata.locked ? null : removeTranscript(transcript)" style="color: red; text-decoration: underline;">Remove</a> and Regenerate
                               </span>
                             </v-col>
                             <v-col cols="12" sm="6" class="pt-0 px-0" :class="($vuetify.breakpoint.smAndUp) ? 'text-right' : ''">
@@ -286,9 +320,9 @@
                                 <v-btn
                                   small
                                   class="controls-row ml-2"
-                                  @click.stop="checkForErrors(transcript.id)"
+                                  @click.stop="transcript.metadata.locked ? null : checkForErrors(transcript.id)"
                                   :loading="analysisStatus[transcript.id]"
-                                  :disabled="analysisStatus[transcript.id]"
+                                  :disabled="analysisStatus[transcript.id] || transcript.metadata.locked"
                                   color="msu light-grey">
                                   {{ transcript.passing ? 'recheck' : 'check' }}
                                 </v-btn>
@@ -302,18 +336,31 @@
                                 :name="`${transcript.id}-transcriptDownloadOptions`"
                                 :label="`Download Transcript ${transcript.revision} as...`"
                                 :return-object="true"
+                                hint=" "
+                                :persistent-hint="true"
                                 :items="transcriptDownloadOptions"
                                 @click.native.stop
                                 >
+                                <template v-slot:message>
+                                  <div :style="`color: ${downloadBtnSettings[transcript.id]?.error.color};`">{{ downloadBtnSettings[transcript.id]?.error.message }}</div>
+                                </template>
                                 <template v-slot:append-outer>
                                   <v-btn
+                                    :id="`${transcript.id}-transcriptDownloadBtn`"
                                     small
                                     class="controls-row mr-2"
+                                    style="width: 10em"
                                     @click.native.stop="convertText({ id: transcript.id, ...selectedTranscriptDownloadOption[transcript.id] })"
-                                    :loading="isDownloading"
-                                    :disabled="!selectedTranscriptDownloadOption[transcript.id] || isDownloading || fileDownloadBtn.disabled"
-                                    :color="fileDownloadBtn.color">
-                                    Download
+                                    :loading="downloadBtnSettings[transcript.id]?.isDownloading || downloadBtnDefaults.disabled"
+                                    :disabled="!selectedTranscriptDownloadOption[transcript.id]?.type
+                                      || downloadBtnSettings[transcript.id]?.isDownloading
+                                      || downloadBtnSettings[transcript.id]?.disabled
+                                      || downloadBtnDefaults.disabled"
+                                    :color="downloadBtnSettings[transcript.id]?.color || downloadBtnDefaults.color">
+                                    <v-icon v-if="downloadBtnSettings[transcript.id]?.icon" small v-text="downloadBtnSettings[transcript.id]?.icon"></v-icon>
+                                    <span v-else>
+                                      {{ downloadBtnSettings[transcript.id]?.text || downloadBtnDefaults.text}}
+                                    </span>
                                   </v-btn>
                                 </template>
                               </v-select>
@@ -327,14 +374,16 @@
                               <v-btn
                                 small
                                 class="white--text controls-row ml-2"
-                                @click.stop="toggleEdited(transcript)"
+                                @click.stop="transcript.metadata.locked ? null : toggleEdited(transcript)"
+                                :disabled="analysisStatus[transcript.id] || transcript.metadata.locked"
                                 color="msu lighten-1">
                                 {{ (transcript.edited) ? 'Unmark as Corrected' : 'Mark as Corrected'}}
                               </v-btn>
                               <v-btn
                                 small
                                 class="white--text controls-row float-right"
-                                @click.stop="removeTranscript(transcript)"
+                                @click.stop="transcript.metadata.locked ? null : removeTranscript(transcript)"
+                                :disabled="analysisStatus[transcript.id] || transcript.metadata.locked"
                                 color="red">
                                 Delete this Transcript
                               </v-btn>
@@ -486,6 +535,8 @@
                                       <v-textarea
                                         :key="`${sentence.id}-startTime`"
                                         v-model="current[prop]"
+                                        :disabled="transcript.metadata.locked"
+                                        :readonly="transcript.metadata.locked"
                                         dense
                                         rows="1"
                                         outlined
@@ -503,6 +554,8 @@
                                       <v-textarea
                                         :key="`${sentence.id}-endTime`"
                                         v-model="current[prop]"
+                                        :disabled="transcript.metadata.locked"
+                                        :readonly="transcript.metadata.locked"
                                         dense
                                         rows="1"
                                         outlined
@@ -520,6 +573,8 @@
                                       <v-text-field
                                         :key="`${sentence.id}-speaker`"
                                         v-model.number="current.metadata[prop]"
+                                        :disabled="transcript.metadata.locked"
+                                        :readonly="transcript.metadata.locked"
                                         dense
                                         outlined
                                         type="number"
@@ -538,6 +593,8 @@
                                       <v-textarea
                                         :key="`${sentence.id}-content`"
                                         v-model="current[prop]"
+                                        :disabled="transcript.metadata.locked"
+                                        :readonly="transcript.metadata.locked"
                                         dense
                                         auto-grow
                                         @focus="createClone"
@@ -549,7 +606,7 @@
                                           <v-icon
                                             :color="current.metadata.redact ? 'red' : 'msu light-grey'"
                                             :ripple="false"
-                                            @click="updateRedactFlag(sentence)"
+                                            @click="transcript.metadata.locked ? null : updateRedactFlag(sentence)"
                                             style="cursor: pointer;">
                                             fa-flag
                                           </v-icon>
@@ -561,6 +618,8 @@
                                 <v-col cols="1">
                                   <v-icon
                                     v-if="hasRole('admin, ra, ga')"
+                                    :disabled="transcript.metadata.locked"
+                                    :readonly="transcript.metadata.locked"
                                     class="mr-3"
                                     color="msu"
                                     @click="addSentence(sentence)"
@@ -569,6 +628,8 @@
                                   </v-icon>
                                   <v-icon
                                     v-if="hasRole('admin, ra, ga')"
+                                    :disabled="transcript.metadata.locked"
+                                    :readonly="transcript.metadata.locked"
                                     class="mr-3"
                                     color="red"
                                     @click="removeSentence(sentence)"
@@ -682,7 +743,8 @@ export default {
       showTimestamps: false,
       isDownloading: false,
       isCompleted: false,
-      fileDownloadBtn: {
+      downloadBtnSettings: {},
+      downloadBtnDefaults: {
         text: 'Download',
         color: 'msu light-grey',
         icon: 'fa-cloud-download-alt',
@@ -696,7 +758,18 @@ export default {
       editorTitle: '',
       metadataIsRunning: false,
       transcriptIsRunning: false,
-      transcriptPanelsOpen: [],
+      isUploading: false,
+      uploadResponse: null,
+      pendingUploadCount: 0,
+      uploadProgress: 0,
+      uploadProgressColor: 'msu accent-orange',
+      fileInputKey: 0,
+      fileUploadBtn: {
+        text: 'Import a transcript',
+        color: 'white',
+        icon: 'fa-file-alt',
+      },
+      transcriptPanelsExpanded: [],
       currentTranscriptErrors: [],
       showCorrectionsList: true,
       diaryStatuses: [
@@ -903,6 +976,7 @@ export default {
         .then((choice) => {
           if (choice) {
             transcript.remove();
+            this.transcriptPanelsExpanded = [];
           }
         });
     },
@@ -960,6 +1034,53 @@ export default {
         .finally(() => { this.transcriptIsRunning = false; });
       }
     },
+    importNewTranscript(documentId) {
+      let importedFile = null;
+      if (documentId) {
+        importedFile = this.$refs.fileInput.files[0];
+        if (importedFile) {
+          let formData = new FormData();
+          formData.append("files[]", importedFile);
+          formData.append("secretKey", this.$appStrings('formSecret'));
+          formData.append('parentId', this.currentDiary.id);
+          formData.append('audioDocumentId', documentId);
+          this.isUploading = true;
+          axios.post('/api/documents', formData, {
+            headers: {
+              Authorization: this.$store.state.auth.accessToken,
+              'Content-Type': 'multipart/form-data',
+            },
+            onUploadProgress: function(progressEvent) {
+              this.uploadProgress = Math.round((progressEvent.loaded * 100) / progressEvent.total);
+            }.bind(this),
+          })
+          .then((resp) => {
+            this.isCompleted = true;
+            this.fileUploadBtn.text = '';
+            this.fileUploadBtn.icon = 'fa-check-circle';
+            this.uploadResponse = resp;
+            this.uploadProgressColor = 'msu success-1';
+            this.transcriptPanelsExpanded = [];
+          })
+          .catch((err) => {
+            this.uploadResponse = err;
+            this.fileUploadBtn.text = '';
+            this.fileUploadBtn.icon = 'fa-exclamation-circle';
+          })
+          .finally(() => {
+            this.isUploading = false;
+            setTimeout(() => {
+              this.fileUploadBtn.text = 'Import a transcript';
+              this.fileUploadBtn.icon = 'fa-file-alt';
+              this.uploadProgress = 0;
+              this.uploadProgressColor = 'msu accent-orange';
+              this.fileInputKey += 1;
+              Promise.resolve(true);
+            }, 1500);
+          });
+        }
+      }
+    },
     convertAudio({id, type, raw = false, redact = false, transcriptionId = null}) {
       const options = {};
       options.to = type;
@@ -971,7 +1092,7 @@ export default {
         options.transcriptionId = transcriptionId;
       }
 
-      this.downloader('/api/audio/' + id, options);
+      this.downloader('/api/audio/' + id, this.currentDiary.id, options);
     },
     convertText({id, type, raw = false, format = 'timestamps', redact = false}) {
       const options = {};
@@ -1014,11 +1135,13 @@ export default {
           },
         ];
       }
-      this.downloader('/api/transcriptions/' + id + '/' + type, options);
+      this.downloader('/api/transcriptions/' + id + '/' + type, id, options);
     },
-    downloader(uri, options) {
-      this.isCompleted = false;
-      this.isDownloading = true;
+    downloader(uri, sourceId, options) {
+
+      this.updateDownloadBtnSettings(sourceId, 'isCompleted', false);
+      this.updateDownloadBtnSettings(sourceId, 'isDownloading', true);
+      this.updateDownloadBtnSettings(sourceId, 'error', '');
 
       axios.get(uri, {
         params: options,
@@ -1035,32 +1158,44 @@ export default {
         responseType: 'arraybuffer',
       })
       .then((resp) => {
-        this.isDownloading = false;
-        this.fileDownloadBtn.text = '';
-        this.fileDownloadBtn.icon = 'fa-check-circle';
-        this.fileDownloadBtn.disabled = true;
+        this.updateDownloadBtnSettings(sourceId, 'isDownloading', false);
+        this.updateDownloadBtnSettings(sourceId, 'disabled', true);
+        this.updateDownloadBtnSettings(sourceId, 'text', '');
+        this.updateDownloadBtnSettings(sourceId, 'icon', 'fa-check-circle');
         var blob = new Blob([resp.data],{type:resp.headers['content-type']});
         var link = document.createElement('a');
         link.href = window.URL.createObjectURL(blob);
         link.target = "_blank"
         link.download = resp.headers['x-filename'];
         link.click();
-      })
-      .catch((err) => {
-        console.log('err', err);
-        this.isDownloading = false;
-        this.fileDownloadBtn.text = '';
-        this.fileDownloadBtn.icon = 'fa-exclamation-circle';
-      })
-      .finally(() => {
         setTimeout(() => {
-          this.fileDownloadBtn.text = 'Download';
-          this.fileDownloadBtn.icon = 'fa-cloud-download-alt';
-          this.fileDownloadBtn.disabled = false;
-          this.isCompleted = true;
+          this.updateDownloadBtnSettings(sourceId, 'text', 'Download');
+          this.updateDownloadBtnSettings(sourceId, 'icon', '');
+          this.updateDownloadBtnSettings(sourceId, 'disabled', false);
+          this.updateDownloadBtnSettings(sourceId, 'isCompleted', true);
           Promise.resolve(true);
         }, 2000);
-      });
+      })
+      .catch((err) => {
+        const errorData = err.response.data instanceof ArrayBuffer
+          ? JSON.parse(new TextDecoder('utf-8').decode(err.response.data))
+          : err.response.data
+        this.updateDownloadBtnSettings(sourceId, 'error', { color: 'red', message: errorData.message });
+        this.updateDownloadBtnSettings(sourceId, 'isDownloading', false);
+        this.updateDownloadBtnSettings(sourceId, 'disabled', false);
+        this.updateDownloadBtnSettings(sourceId, 'text', '');
+        this.updateDownloadBtnSettings(sourceId, 'icon', 'fa-exclamation-circle');
+        this.updateDownloadBtnSettings(sourceId, 'color', 'msu accent-orange');
+        setTimeout(() => {
+          this.updateDownloadBtnSettings(sourceId, 'text', 'Download');
+          this.updateDownloadBtnSettings(sourceId, 'icon', '');
+          this.updateDownloadBtnSettings(sourceId, 'color', '');
+          Promise.resolve(true);
+        }, 3000);
+      })
+    },
+    updateDownloadBtnSettings(sourceId, key, value) {
+      this.$set(this.downloadBtnSettings, sourceId, { ...this.downloadBtnSettings[sourceId], [key]: value });
     },
     updatePlayerStatus(action) {
       switch (action) {

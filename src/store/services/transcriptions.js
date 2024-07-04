@@ -13,6 +13,8 @@ class Transcription extends BaseModel {
     return {
       tags: [],
       metadata: {},
+      subjectMetadataCoded: {},
+      processingJobCount: 0,
       profileId: '',
       active: 1,
       hidden: 0,

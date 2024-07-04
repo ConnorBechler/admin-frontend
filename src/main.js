@@ -11,6 +11,7 @@ import './plugins/vue-toastification';
 import './plugins/vuetify-confirm';
 import './plugins/vue-moment';
 import './plugins/vue-number-input';
+import './plugins/vue-clipboards';
 import './components';
 
 Vue.config.productionTip = false;

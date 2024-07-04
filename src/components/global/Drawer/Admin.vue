@@ -47,6 +47,30 @@ export default {
           route: 'adminReportsList',
         },
         {
+          text: 'Transcriptions',
+          icon: 'fa-list-check',
+          roles: 'transcriptManager',
+          route: 'adminTranscriptionManagerList',
+        },
+        {
+          text: 'Research',
+          icon: 'fa-clipboard-list',
+          path: '/admin/research',
+          roles: 'researchManager',
+          children: [
+            {
+              text: 'Processing Jobs',
+              icon: 'fa-bars-progress',
+              route: 'adminResearchProcessingJobsList',
+            },
+            {
+              text: 'Workers',
+              icon: 'fa-microchip',
+              route: 'adminResearchRemoteWorkersList',
+            },
+          ],
+        },
+        {
           text: 'Manage',
           icon: 'fa-cogs',
           path: '/admin/manage',
