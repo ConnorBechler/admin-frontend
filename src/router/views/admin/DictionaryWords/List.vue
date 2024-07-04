@@ -8,7 +8,7 @@
               {text: 'Word', value: 'word'},
               {text: 'Phonemes', value: 'phonemes'},
               {text: 'Added', value: 'createdAt'},
-              {text: 'Active?', value: 'active', width: '55px', align: 'left', sortable: false},
+              {text: 'Enabled?', value: 'active', width: '55px', align: 'left', sortable: false},
               {text: '', value: 'actions', align: 'end', sortable: false},
             ]"
             :items="dictionaryWords"
@@ -296,6 +296,9 @@ export default {
           'Cache-Control': 'no-cache',
           'Pragma': 'no-cache',
           'Expires': '0',
+        },
+        params: {
+          fromApp: true,
         },
         responseType: 'arraybuffer',
       })

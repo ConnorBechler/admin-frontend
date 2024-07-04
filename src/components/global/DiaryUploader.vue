@@ -1,56 +1,68 @@
 <template>
   <span>
-    <v-col cols="12">
-      <v-menu
-        ref="menu"
-        v-model="menu"
-        :close-on-content-click="false"
-        :return-value.sync="selectedDate"
-        transition="scale-transition"
-        offset-y
-        min-width="290px"
-      >
-        <template v-slot:activator="{ on }">
-          <v-text-field
-            v-model="selectedDate"
-            label="Diary Date"
-            readonly
-            clearable
-            prepend-icon="fa-calendar"
-            v-on="on"
-            hint="YYYY-MM-DD"
-            :persistent-hint="true"
-          ></v-text-field>
-        </template>
-        <v-date-picker
-          ref="picker"
-          v-model="selectedDate"
-          color="msu"
+    <v-row>
+      <v-col cols="12" md="6">
+        <v-menu
+          ref="menu"
+          v-model="menu"
+          :close-on-content-click="false"
+          :return-value.sync="selectedDate"
+          transition="scale-transition"
+          offset-y
+          min-width="290px"
         >
-          <v-spacer></v-spacer>
-          <v-btn text color="primary" @click="menu = false">Cancel</v-btn>
-          <v-btn text color="primary" @click="updateDate(selectedDate)">OK</v-btn>
-        </v-date-picker>
-      </v-menu>
-    </v-col>
-    <v-col cols="12">
-      <v-file-input :label="(multiple) ? 'Select file(s)' : 'Select a file'" v-model="fileList" :disabled="isUploading" ref="fileInput" name="file" :loading="isUploading" :multiple="multiple" chips></v-file-input>
-    </v-col>
-    <v-col cols="12" md="2" class="d-flex">
-      <v-btn
-        type="button"
-        class="flex-grow-1"
-        @click.stop="uploadFile"
-        :disabled="!fileList || !selectedDate"
-        :loading="isUploading"
-        :color="fileUploadBtn.color">
-        <v-icon v-if="fileUploadBtn.icon" color="white" v-text="fileUploadBtn.icon"></v-icon>
-        {{ this.fileUploadBtn.text }}
-        <span slot="loader">
-          {{ uploadProgress }}%
-        </span>
-      </v-btn>
-    </v-col>
+          <template v-slot:activator="{ on }">
+            <v-text-field
+              v-model="selectedDate"
+              label="Diary Date"
+              clearable
+              prepend-icon="fa-calendar"
+              @input="updateDate(selectedDate)"
+              v-on="on"
+              hint="YYYY-MM-DD"
+              :persistent-hint="true"
+            ></v-text-field>
+          </template>
+          <v-date-picker
+            ref="picker"
+            v-model="selectedDate"
+            color="msu"
+          >
+            <v-spacer></v-spacer>
+            <v-btn text color="primary" @click="menu = false">Cancel</v-btn>
+            <v-btn text color="primary" @click="updateDate(selectedDate)">OK</v-btn>
+          </v-date-picker>
+        </v-menu>
+      </v-col>
+      <v-col cols="12" md="8">
+        <v-file-input :label="(multiple) ? 'Select file(s)' : 'Select a file'" v-model="fileList" :disabled="isUploading" ref="fileInput" name="file" :loading="isUploading" :multiple="multiple" chips></v-file-input>
+      </v-col>
+      <v-col cols="12" md="4">
+        <v-switch
+          label="Transcribe?"
+          v-model="transcribeEnabled"
+          :hide-details="true"
+          color="msu"
+        />
+      </v-col>
+    </v-row>
+    <v-row>
+      <v-col cols="12" md="2" class="d-flex">
+        <v-btn
+          type="button"
+          class="flex-grow-1"
+          @click.stop="uploadFile"
+          :disabled="!fileList || !selectedDate"
+          :loading="isUploading"
+          :color="fileUploadBtn.color">
+          <v-icon v-if="fileUploadBtn.icon" color="white" v-text="fileUploadBtn.icon"></v-icon>
+          {{ this.fileUploadBtn.text }}
+          <span slot="loader">
+            {{ uploadProgress }}%
+          </span>
+        </v-btn>
+      </v-col>
+    </v-row>
   </span>
 </template>
 
@@ -103,11 +115,18 @@ export default {
       },
       selectedDate: null,
       menu: false,
+      transcribeEnabled: true,
+      textFileTypes: [
+        "txt",
+        "tsv",
+      ],
     };
   },
   methods: {
     updateDate(date) {
       this.$refs.menu.save(date);
+      this.selectedDate = date;
+      this.menu = false;
     },
     uploadFile() {
       if (this.fileList) {
@@ -118,6 +137,7 @@ export default {
         formData.append("secretKey", this.$appStrings('formSecret'));
         formData.append('profileId', this.profileId);
         formData.append('diaryDate', this.selectedDate);
+        formData.append('transcribe', this.transcribeEnabled);
         this.isUploading = true;
         axios.post('/api/documents', formData, {
           headers: {
@@ -154,5 +174,16 @@ export default {
       }
     },
   },
+  watch: {
+    fileList(files) {
+      if (files) {
+        files.forEach(file => {
+          if (this.textFileTypes.some(textFileType => file.name.split('.')[file.name.split('.').length-1].includes(textFileType))) {
+            this.transcribeEnabled = false;
+          }
+        })
+      }
+    }
+  }
 };
 </script>

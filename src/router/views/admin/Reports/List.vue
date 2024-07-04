@@ -75,9 +75,9 @@
                   <v-list-item-subtitle>Download CSV of all Subjects (SID + demo info only)</v-list-item-subtitle>
                 </v-list-item-content>
               </v-list-item>
-              <v-divider v-if="hasRole('admin')"></v-divider>
+              <v-divider v-if="hasRole('admin, ra, ga')"></v-divider>
               <v-list-item
-                v-if="hasRole('admin')"
+                v-if="hasRole('admin, ra, ga')"
                 @click="batchConvert({type: 'tsv', caller: 'batchTsv'})"
                 :disabled="downloadStatus['batchTsv'] === 'running'">
                 <v-list-item-icon class="pt-4">
@@ -90,9 +90,9 @@
                   <v-list-item-subtitle>Download ZIP of all transcripts w/ timestamps (TXT)</v-list-item-subtitle>
                 </v-list-item-content>
               </v-list-item>
-              <v-divider v-if="hasRole('admin')"></v-divider>
+              <v-divider v-if="hasRole('admin, ra, ga')"></v-divider>
               <v-list-item
-                v-if="hasRole('admin')"
+                v-if="hasRole('admin, ra, ga')"
                 @click="batchConvert({type: 'tsv', caller: 'batchTsvRedacted', redact: true})"
                 :disabled="downloadStatus['batchTsvRedacted'] === 'running'">
                 <v-list-item-icon class="pt-4">
@@ -105,9 +105,9 @@
                   <v-list-item-subtitle>Download ZIP of all transcripts w/ timestamps (TXT)</v-list-item-subtitle>
                 </v-list-item-content>
               </v-list-item>
-              <v-divider v-if="hasRole('admin')"></v-divider>
+              <v-divider v-if="hasRole('admin, ra, ga')"></v-divider>
               <v-list-item
-                v-if="hasRole('admin')"
+                v-if="hasRole('admin, ra, ga')"
                 @click="batchConvert({type: 'csv', caller: 'batchCsv'})"
                 :disabled="downloadStatus['batchCsv'] === 'running'">
                 <v-list-item-icon class="pt-4">
@@ -120,9 +120,9 @@
                   <v-list-item-subtitle>Download ZIP of all transcripts w/ timestamps (CSV)</v-list-item-subtitle>
                 </v-list-item-content>
               </v-list-item>
-              <v-divider v-if="hasRole('admin')"></v-divider>
+              <v-divider v-if="hasRole('admin, ra, ga')"></v-divider>
               <v-list-item
-                v-if="hasRole('admin')"
+                v-if="hasRole('admin, ra, ga')"
                 @click="batchConvert({type: 'csv', caller: 'batchCsvRedacted', redact: true})"
                 :disabled="downloadStatus['batchCsvRedacted'] === 'running'">
                 <v-list-item-icon class="pt-4">
@@ -135,9 +135,9 @@
                   <v-list-item-subtitle>Download ZIP of all transcripts w/ timestamps (CSV)</v-list-item-subtitle>
                 </v-list-item-content>
               </v-list-item>
-              <v-divider v-if="hasRole('admin')"></v-divider>
+              <v-divider v-if="hasRole('admin, ra, ga')"></v-divider>
               <v-list-item
-                v-if="hasRole('admin')"
+                v-if="hasRole('admin, ra, ga')"
                 @click="batchConvert({type: 'tsv', caller: 'batchRaw', raw: true})"
                 :disabled="downloadStatus['batchRaw'] === 'running'">
                 <v-list-item-icon class="pt-4">

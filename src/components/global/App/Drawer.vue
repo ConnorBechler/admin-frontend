@@ -14,7 +14,7 @@
       <template v-for="(item, i) in this.items" >
         <v-list-item
           :key="i"
-          v-if="!item.children && (item.roles ? hasRole(item.roles) : true)"
+          v-if="!item.children && (item.roles ? (isAdmin || hasRole(item.roles)) : true)"
           :to="{ name: item.route }"
           exact>
 
@@ -29,7 +29,7 @@
 
         <v-list-group
           :key="i"
-          v-else-if="item.children && (item.roles ? hasRole(item.roles) : true)"
+          v-else-if="item.children && (item.roles ? (isAdmin || hasRole(item.roles)) : true)"
           eager
           :value="$route.matched.some(m => m.path === item.path)">
           <template v-slot:prependIcon>
@@ -41,7 +41,7 @@
           <template v-for="(child, j) in item.children" >
             <v-list-item
               :key="`${i}-${j}`"
-              v-if="!child.children && (child.roles ? hasRole(child.roles) : true)"
+              v-if="!child.children && (child.roles ? (isAdmin || hasRole(child.roles)) : true)"
               :to="{ name: child.route }"
               exact>
 
@@ -56,7 +56,7 @@
 
             <v-list-group
               :key="`${i}-${j}`"
-              v-else-if="child.children && (child.roles ? hasRole(child.roles) : true)"
+              v-else-if="child.children && (child.roles ? (isAdmin || hasRole(child.roles)) : true)"
               eager
               sub-group
               :value="$route.matched.some(m => m.path === child.path)">
@@ -80,7 +80,7 @@
                   </v-list-item-content>
                 </v-list-item>
               </template>
-              <v-divider v-if="child.children && (child.roles ? hasRole(child.roles) : true)"
+              <v-divider v-if="child.children && (child.roles ? (isAdmin || hasRole(child.roles)) : true)"
                 :key="`divider-${i}-${j}`"
                 class="mb-1"></v-divider>
             </v-list-group>

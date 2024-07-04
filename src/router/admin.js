@@ -66,6 +66,51 @@ export default [
         ],
       },
       {
+        path: 'research',
+        component: LayoutBlank,
+        meta: {
+          roleRequired: 'researchManager',
+        },
+        children: [
+          {
+            path: 'processingJobs',
+            component: LayoutBlank,
+            children: [
+              {
+                path: '',
+                name: 'adminResearchProcessingJobsList',
+                component: () => import(/* webpackChunkName: "adminResearchProcessingJobsList" */ '@/router/views/admin/ProcessingJobs/List.vue'),
+              },
+            ],
+          },
+          {
+            path: 'remoteWorkers',
+            component: LayoutBlank,
+            children: [
+              {
+                path: '',
+                name: 'adminResearchRemoteWorkersList',
+                component: () => import(/* webpackChunkName: "adminResearchRemoteWorkersList" */ '@/router/views/admin/RemoteWorkers/List.vue'),
+              },
+            ],
+          },
+        ],
+      },
+      {
+        path: 'transcriptions',
+        component: LayoutBlank,
+        meta: {
+          roleRequired: 'transcriptManager',
+        },
+        children: [
+          {
+            path: '',
+            name: 'adminTranscriptionManagerList',
+            component: () => import(/* webpackChunkName: "adminTranscriptionManagerList" */ '@/router/views/admin/TranscriptionManager/List.vue'),
+          },
+        ],
+      },
+      {
         path: 'dictionary',
         component: LayoutBlank,
         children: [

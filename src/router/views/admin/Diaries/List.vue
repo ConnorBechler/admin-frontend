@@ -51,28 +51,27 @@
         <v-col cols="12" lg="10">
           <v-data-table
             :headers="[
-              {text: 'S', value: 'metadata.editingStatus', width: '10%', align: 'center'},
-              {text: 'SID', value: 'subjectId', width: '20%'},
-              {text: 'Pub', value: 'permissionShare', width: '10%', align: 'center'},
-              {text: 'Feat', value: 'metadata.interesting', width: '10%', align: 'center'},
-              {text: 'Group', value: 'ageCategory', width: '10%'},
-              {text: 'Diary #', value: 'dateCode', width: '25%', align: 'end'},
-              {text: 'Duration', value: 'metadata.duration', width: '10%', align: 'start'},
-              {text: '', value: 'actions', width: '10%'},
-              {text: '', value: 'hidden', width: '5%', align: ($vuetify.breakpoint.smAndDown || !showHiddenDiaries) ? ' d-none' : ''},
+              {text: 'S', value: 'metadata.editingStatus', width: '10%', align: 'center', sortable: false},
+              {text: 'SID', value: 'subjectId', width: '20%', sortable: false},
+              {text: 'Pub', value: 'permissionShare', width: '10%', align: 'center', sortable: false},
+              {text: 'Feat', value: 'metadata.interesting', width: '10%', align: 'center', sortable: false},
+              {text: 'Group', value: 'ageCategory', width: '10%', sortable: false},
+              {text: 'Diary #', value: 'dateCode', width: '25%', align: 'end', sortable: false},
+              {text: 'Duration', value: 'metadata.duration', width: '10%', align: 'start', sortable: false},
+              {text: '', value: 'actions', width: '10%', sortable: false},
+              {text: '', value: 'hidden', width: '5%', align: ($vuetify.breakpoint.smAndDown || !showHiddenDiaries) ? ' d-none' : '', sortable: false},
             ]"
             :items="diaries"
+            :server-items-length="serverItemsLength"
+            :hide-default-header="diaries.length === 0"
             :options.sync="tableOptions"
             :footer-props="{
-              itemsPerPageOptions: [5,10,15,25,50,100,-1],
+              itemsPerPageOptions: [5,10,15,25,50,100],
               showFirstLastPage: true,
-              disablePagination: diariesParams.query.$limit === 0
+              disablePagination: serverItemsLength <= tableOptions.itemsPerPage
             }"
             :fixed-header="true"
-            :hide-default-header="diaries.length === 0"
-            :search="localSearch"
-            multi-sort
-            :loading="isFindDiariesPending"
+            :loading="isProcessing"
             loading-text="Loading Diaries..."
             height="70vh"
             class="elevation-1">
@@ -85,7 +84,8 @@
                   <h3>Recent Diaries</h3>
                 </v-toolbar-title>
                 <v-text-field
-                  v-model="localSearch"
+                  v-model="searchString"
+                  @change="getDiariesList()"
                   label="Search"
                   placeholder="SID, yyyy-mm-dd, kid, adult, etc"
                   solo
@@ -144,7 +144,10 @@
             </template>
             <template v-slot:item.metadata.editingStatus="{ item }">
               <span class="mr-1">
-                <v-icon small color="msu" class="white--text" v-if="item.metadata.editingStatus === 'Completed'">
+                <v-icon small color="msu" class="white--text" v-if="item.metadata.locked">
+                  fa-lock
+                </v-icon>
+                <v-icon small color="msu" class="white--text" v-else-if="item.metadata.editingStatus === 'Completed'">
                   fa-check
                 </v-icon>
                 <v-icon small color="msu dark-grey" class="white--text" v-else-if="item.metadata.editingStatus === 'In Progress'">
@@ -173,6 +176,18 @@
                 color="msu white--text"
                 @click="showDiaryDetail(item)">
                 View
+              </v-btn>
+            </template>
+            <template v-slot:footer.prepend>
+              <v-btn
+                small
+                @click.stop="getDiariesList()"
+                :loading="isProcessing"
+                :disabled="isProcessing"
+                color="msu light-grey"
+                class="ml-5">
+                Refresh
+                <v-icon small right>fa-refresh</v-icon>
               </v-btn>
             </template>
           </v-data-table>
@@ -205,38 +220,75 @@ export default {
   },
   mixins: [
     formatters,
-    makeFindMixin({ service: 'diaries', watch: true }),
+    // makeFindMixin({ service: 'diaries', watch: true }),
   ],
   data() {
     return {
+      diaries: [],
       showHiddenDiaries: false,
-      localSearch: null,
+      searchString: null,
       showEditor: false,
       editedObj: new this.$FeathersVuex.api.Profile(),
       editorTitle: '',
+      serverItemsLength: 0,
       tableOptions: {
-        sortBy: [],
-        sortDesc: [],
+        sortDesc: [false],
         itemsPerPage: 25,
         page: 1,
       },
+      isProcessing: false,
     };
   },
   computed: {
     ...authComputed,
     ...appComputed,
-    diariesParams() {
-      const query = { active: 1, hidden: 0, $sort: { createdAt: -1 }, $limit: 99999 };
-      if (this.showHiddenDiaries) {
-        delete query.hidden;
-      }
-      return { query };
-    },
+    // diariesParams() {
+    //   const query = { active: 1, hidden: 0, $sort: { createdAt: -1 } };
+    //   if (this.showHiddenDiaries) {
+    //     delete query.hidden;
+    //   }
+    //   return { query };
+    // },
     showHiddenDiariesIcon() {
       return (this.showHiddenDiaries) ? 'fa-eye' : 'fa-eye-slash';
     },
   },
   methods: {
+    async getDiariesList() {
+      this.isProcessing = true;
+      const sorter = [];
+      if (this.tableOptions.sortBy.length > 0) {
+        for (const idx of this.tableOptions.sortBy) {
+          sorter.push(`${this.tableOptions.sortBy[idx]} ${this.tableOptions.sortDesc[idx] ? 'ASC' : 'DESC'}`)
+        }
+      } else {
+        sorter.push(`diaries.createdAt DESC`);
+      }
+      this.diaries = await feathersClient.service('adminMaintenance').create({
+          action: "diary:getList",
+          searchString: this.searchString,
+          params: {
+            showHiddenDiaries: this.showHiddenDiaries,
+            sort: sorter,
+            limit: this.tableOptions.itemsPerPage,
+            skip: this.tableOptions.itemsPerPage * ((this.tableOptions.page || 1) - 1)
+          },
+        })
+        .then((resp) => {
+          this.serverItemsLength = resp.serverItemsLength;
+          const ret = [];
+          for (const d of resp.data) {
+            ret.push(new this.$FeathersVuex.api.Diary(d));
+          }
+          return ret;
+        })
+        .catch((err) => {
+          return [];
+        })
+        .finally(() => {
+          this.isProcessing = false;
+        })
+    },
     showDiaryDetail(obj) {
       let routeData = this.$router.resolve({ name: 'adminDiaryDetails', params: { id: obj.id } });
       window.open(routeData.href, '_blank');
@@ -257,8 +309,14 @@ export default {
       this.$store.dispatch('view/set', {
         showHiddenDiaries: val
       }, { root: true });
-      this.tableOptions.page = 1;
-    }
+      this.$set(this.tableOptions, 'page', 1);
+      this.getDiariesList();
+    },
+    tableOptions(val, oldVal) {
+      if (val && val !== oldVal) {
+        this.getDiariesList();
+      }
+    },
   },
   mounted() {
     this.showHiddenDiaries = this.viewPreferences('showHiddenDiaries');
