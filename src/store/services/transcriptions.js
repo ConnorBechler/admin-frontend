@@ -77,7 +77,7 @@ class Transcription extends BaseModel {
       }
     }
 
-    ret.class += ' white--text ml-2 font-weight-bold';
+    ret.class += ' white--text font-weight-bold';
 
     return ret;
   }

@@ -8,10 +8,9 @@
             {text: 'SID', value: 'shortcode', width: '155px', sortable: false},
             {text: 'Transcription', value: 'dateCode', width: '170px', sortable: false},
             {text: 'Validate', value: 'checker', width: '140px', align: 'center', sortable: false},
-            {text: 'Corrected?', value: 'edited', width: '120px', align: 'center', sortable: false},
-            {text: 'Status?', value: 'status', width: '250px', align: 'left', sortable: false},
+            {text: 'Status?', value: 'status', align: 'center', sortable: false},
             {text: 'Locking', value: 'metadata.locked', width: '100px', align: 'center', sortable: false},
-            {text: 'View', value: 'actions', align: 'end', sortable: false},
+            {text: 'Link', value: 'actions', align: 'end', sortable: false},
             {text: 'Hide', value: 'hidden', width: '75px', sortable: false},
           ]"
           :items="reportData"
@@ -143,15 +142,10 @@
             <template v-slot:item.dateCode="{ item }">
               {{ item.diaryMetadata ? `${item.diaryMetadata.diaryDate} #${item.diaryMetadata.sequence} T${item.revision}` : 'NO DIARY?' }}
             </template>
-            <template v-slot:item.edited="{ item }">
-              <v-chip class="msu lighten-1 white--text" small v-if="item.edited">
-                Corrected
-              </v-chip>
-            </template>
             <template v-slot:item.status="{ item }">
               <span v-if="item.status === 99">
                 <span v-if="analysisStatus[item.id]">
-                  <v-chip class="msu light-grey black--text ml-2 font-weight-bold" small>
+                  <v-chip class="msu light-grey black--text font-weight-bold" small>
                     Checking...
                   </v-chip>
                 </span>
@@ -177,7 +171,7 @@
                 @click="showSubjectDetail(item)">
                 Coding
               </v-btn>
-              <span v-else-if="item.passing && !item.metadata.hasChanged">
+              <span v-else-if="item.passing && !item.metadata.hasChanged && (item.diaryMetadata && item.diaryMetadata.editingStatus && item.diaryMetadata.editingStatus == 'Completed')">
                 <v-btn
                   x-small
                   class="controls-row"

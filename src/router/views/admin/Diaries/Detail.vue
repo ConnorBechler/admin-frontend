@@ -303,9 +303,6 @@
                               </span>
                             </v-col>
                             <v-col cols="12" sm="6" class="pt-0 px-0" :class="($vuetify.breakpoint.smAndUp) ? 'text-right' : ''">
-                              <v-chip class="msu lighten-1 white--text" v-if="transcript.edited">
-                                Corrected
-                              </v-chip>
                               <span v-if="transcript.status === 99">
                                 <span v-if="analysisStatus[transcript.id]">
                                   <v-chip class="msu light-grey black--text ml-2 font-weight-bold">
@@ -371,14 +368,6 @@
                           <v-row class="mb-5">
                             <v-col cols="12">
                               Actions:
-                              <v-btn
-                                small
-                                class="white--text controls-row ml-2"
-                                @click.stop="transcript.metadata.locked ? null : toggleEdited(transcript)"
-                                :disabled="analysisStatus[transcript.id] || transcript.metadata.locked"
-                                color="msu lighten-1">
-                                {{ (transcript.edited) ? 'Unmark as Corrected' : 'Mark as Corrected'}}
-                              </v-btn>
                               <v-btn
                                 small
                                 class="white--text controls-row float-right"
@@ -941,12 +930,6 @@ export default {
     },
     clearProfileDialog() {
       this.showProfileEditor = false;
-    },
-    toggleEdited(transcript) {
-      const clone = transcript.clone();
-      clone.edited = !clone.edited;
-      clone.commit();
-      clone.save();
     },
     toggle(prop, sub) {
       const clone = this.currentDiary.clone();
