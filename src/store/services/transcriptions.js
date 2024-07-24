@@ -56,7 +56,7 @@ class Transcription extends BaseModel {
     } else {
       if (this.passing) {
         if (this.metadata.hasChanged) {
-          ret.class = 'msu accent-purple';
+          ret.class = 'msu accent-dark-blue';
           ret.text = 'Changed';
         } else {
           ret.class = 'msu';

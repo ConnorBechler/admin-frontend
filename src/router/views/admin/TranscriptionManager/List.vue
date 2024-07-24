@@ -125,7 +125,7 @@
                 <v-icon small color="msu" class="white--text" v-if="item.passing && !item.metadata.hasChanged">
                   fa-check-double
                 </v-icon>
-                <v-icon small color="msu accent-purple" class="white--text" v-else-if="item.passing && item.metadata.hasChanged">
+                <v-icon small color="msu accent-dark-blue" class="white--text" v-else-if="item.passing && item.metadata.hasChanged">
                   fa-question
                 </v-icon>
                 <v-icon small color="red" class="white--text ml-1" v-else-if="item.hasErrors">
