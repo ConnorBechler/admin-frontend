@@ -31,6 +31,7 @@
           <v-tab-item
             class="px-5">
             <v-row>
+              <!---
               <v-col cols="12" md="6" class="d-flex justify-start py-1">
                 <v-switch
                   :id="`${clone.id || clone.__id}-metadata.${prependField}addedMailchimp`"
@@ -43,7 +44,8 @@
                   color="msu">
                 </v-switch>
               </v-col>
-              <v-col cols="12" md="6" class="d-flex justify-end py-1">
+              --->
+              <v-col cols="12" class="d-flex justify-end py-1">
                 <v-switch
                   :id="`${clone.id || clone.__id}-${prependField}hidden`"
                   v-model="clone[prependField + 'hidden']"
@@ -109,6 +111,7 @@
             </v-row>
             <v-row>
               <v-col class="py-2" cols="12" md="6">
+                <!--- example showing validation + error displays
                 <ValidationProvider
                   ref="first"
                   name="First Name"
@@ -127,46 +130,39 @@
                     :autocomplete="(autofill) ? '' : 'nope'">
                   </v-text-field>
                 </ValidationProvider>
+                --->
+                <!--- example without validation --->
+                <v-text-field
+                  :id="`${clone.id || clone.__id}-${prependField}first`"
+                  v-model="clone[prependField + 'first']"
+                  :disabled="parentDisabled"
+                  name="first"
+                  label="First Name"
+                  type="text"
+                  :autocomplete="(autofill) ? '' : 'nope'">
+                </v-text-field>
               </v-col>
               <v-col class="py-2" cols="12" md="6">
-                <ValidationProvider
-                  ref="last"
-                  name="Last Name"
-                  rules="required"
-                  v-slot="{ errors }"
-                >
-                  <v-text-field
-                    :id="`${clone.id || clone.__id}-${prependField}last`"
-                    v-model="clone[prependField + 'last']"
-                    :disabled="parentDisabled"
-                    :error-messages="errors"
-                    :hide-details="!errors.length"
-                    name="last"
-                    label="Last Name"
-                    type="text"
-                    :autocomplete="(autofill) ? '' : 'nope'">
-                  </v-text-field>
-                </ValidationProvider>
+                <v-text-field
+                  :id="`${clone.id || clone.__id}-${prependField}last`"
+                  v-model="clone[prependField + 'last']"
+                  :disabled="parentDisabled"
+                  name="last"
+                  label="Last Name"
+                  type="text"
+                  :autocomplete="(autofill) ? '' : 'nope'">
+                </v-text-field>
               </v-col>
               <v-col class="py-2" cols="12" md="6">
-                <ValidationProvider
-                  ref="email"
-                  name="Email"
-                  rules="required|email"
-                  v-slot="{ errors }"
-                >
-                  <v-text-field
-                    :id="`${clone.id || clone.__id}-${prependField}email`"
-                    v-model="clone[prependField + 'email']"
-                    :disabled="parentDisabled || selfDisabled"
-                    :error-messages="errors"
-                    :hide-details="!errors.length"
-                    name="email"
-                    label="Email"
-                    type="text"
-                    :autocomplete="(autofill) ? '' : 'nope'">
-                  </v-text-field>
-                </ValidationProvider>
+                <v-text-field
+                  :id="`${clone.id || clone.__id}-${prependField}email`"
+                  v-model="clone[prependField + 'email']"
+                  :disabled="parentDisabled || selfDisabled"
+                  name="email"
+                  label="Email"
+                  type="text"
+                  :autocomplete="(autofill) ? '' : 'nope'">
+                </v-text-field>
               </v-col>
               <FeathersVuexFind service="participantCategories" ref="participant_categories" :query="{ active: 1, hidden: 0, $sort: { sortOrder: 1 } }">
                 <v-col class="py-2" cols="12" md="4" slot-scope="{ items: participantCategories }">
@@ -205,6 +201,7 @@
                   color="msu">
                 </v-switch>
               </v-col>
+              <!---
               <v-col class="py-2" cols="12" md="5">
                 <v-select
                   :id="`${clone.id || clone.__id}-${prependField}frequency`"
@@ -217,6 +214,8 @@
                   :autocomplete="(autofill) ? '' : 'nope'">
                 </v-select>
               </v-col>
+              --->
+              <!---
               <v-col class="py-2" cols="12" md="5">
                 <v-switch
                   :id="`${clone.id || clone.__id}-${prependField}permission_share`"
@@ -228,6 +227,8 @@
                   color="msu">
                 </v-switch>
               </v-col>
+              --->
+              <!---
               <v-col class="py-2" cols="12" md="5">
                 <v-switch
                   :id="`${clone.id || clone.__id}-${prependField}permission_share_lom`"
@@ -239,6 +240,7 @@
                   color="msu">
                 </v-switch>
               </v-col>
+              --->
               <v-col class="py-2" cols="12" md="5">
                 <v-switch
                   :id="`${clone.id || clone.__id}-${prependField}payment_optout`"
@@ -309,6 +311,7 @@
                   autocomplete="nope">
                 </v-text-field>
               </v-col>
+              <!---
               <v-col class="py-2" cols="12">
                 <v-text-field
                   v-model="clone.metadata.locationGrowingUp"
@@ -319,6 +322,8 @@
                   autocomplete="nope">
                 </v-text-field>
               </v-col>
+              --->
+              <!---
               <v-col class="py-2" cols="12">
                 <v-text-field
                   v-model="clone.metadata.locationCurrent"
@@ -329,6 +334,7 @@
                   autocomplete="nope">
                 </v-text-field>
               </v-col>
+              --->
               <v-col class="py-2" cols="12">
                 <v-autocomplete
                   v-model="clone.metadata.educationLevel"
@@ -396,6 +402,7 @@
                   autocomplete="nope">
                 </v-autocomplete>
               </v-col>
+              <!---
               <v-col class="py-2" cols="12" sm="6" md="4">
                 <v-autocomplete
                   v-model="clone.metadata.coded.pitchRange"
@@ -412,6 +419,7 @@
                   autocomplete="nope">
                 </v-autocomplete>
               </v-col>
+              --->
               <v-col class="py-2" cols="12" sm="6">
                 <v-autocomplete
                   v-model="clone.metadata.coded.ethnicity"
@@ -453,6 +461,7 @@
                   autocomplete="nope">
                 </v-text-field>
               </v-col>
+              <!---
               <v-col class="py-2" cols="12" sm="6">
                 <v-autocomplete
                   v-model="clone.metadata.coded.locationRaised"
@@ -468,6 +477,8 @@
                   autocomplete="nope">
                 </v-autocomplete>
               </v-col>
+              --->
+              <!---
               <v-col class="py-2" cols="12" sm="6">
                 <v-text-field
                   v-model="clone.metadata.coded.locationRaisedNotes"
@@ -478,6 +489,8 @@
                   autocomplete="nope">
                 </v-text-field>
               </v-col>
+              --->
+              <!---
               <v-col class="py-2" cols="12" sm="6">
                 <v-autocomplete
                   v-model="clone.metadata.coded.locationParents"
@@ -493,6 +506,7 @@
                   autocomplete="nope">
                 </v-autocomplete>
               </v-col>
+              --->
               <v-col class="py-2" cols="12">
                 <v-textarea
                   v-model="clone.metadata.coded.occupation"
@@ -694,66 +708,66 @@ export default {
           value: 'Other'
         }
       ],
-      pitchRanges: [
-        {
-          text: 'High',
-          value: 'High'
-        },
-        {
-          text: 'Low',
-          value: 'Low'
-        }
-      ],
-      raisedLocations: [
-        {
-          text: 'Michigan',
-          value: 'Michigan'
-        },
-        {
-          text: 'Not Michigan',
-          value: 'Not Michigan'
-        },
-        {
-          text: 'Unknown',
-          value: 'Unknown'
-        }
-      ],
-      parentLocations: [
-        {
-          text: 'Michigan',
-          value: 'Michigan'
-        },
-        {
-          text: 'Not Michigan',
-          value: 'Not Michigan'
-        },
-        {
-          text: 'Michigan and not Michigan',
-          value: 'MI and not-MI'
-        },
-        {
-          text: 'Unknown',
-          value: 'Unknown'
-        }
-      ],
-      frequencies: [
-        {
-          text: 'Once a week',
-          value: 'weekly',
-        },
-        {
-          text: 'Every other week',
-          value: 'biweekly',
-        },
-        {
-          text: 'Once a month',
-          value: 'monthly',
-        },
-        {
-          text: 'Just once',
-          value: 'once',
-        },
-      ],
+      // pitchRanges: [
+      //   {
+      //     text: 'High',
+      //     value: 'High'
+      //   },
+      //   {
+      //     text: 'Low',
+      //     value: 'Low'
+      //   }
+      // ],
+      // raisedLocations: [
+      //   {
+      //     text: 'Michigan',
+      //     value: 'Michigan'
+      //   },
+      //   {
+      //     text: 'Not Michigan',
+      //     value: 'Not Michigan'
+      //   },
+      //   {
+      //     text: 'Unknown',
+      //     value: 'Unknown'
+      //   }
+      // ],
+      // parentLocations: [
+      //   {
+      //     text: 'Michigan',
+      //     value: 'Michigan'
+      //   },
+      //   {
+      //     text: 'Not Michigan',
+      //     value: 'Not Michigan'
+      //   },
+      //   {
+      //     text: 'Michigan and not Michigan',
+      //     value: 'MI and not-MI'
+      //   },
+      //   {
+      //     text: 'Unknown',
+      //     value: 'Unknown'
+      //   }
+      // ],
+      // frequencies: [
+      //   {
+      //     text: 'Once a week',
+      //     value: 'weekly',
+      //   },
+      //   {
+      //     text: 'Every other week',
+      //     value: 'biweekly',
+      //   },
+      //   {
+      //     text: 'Once a month',
+      //     value: 'monthly',
+      //   },
+      //   {
+      //     text: 'Just once',
+      //     value: 'once',
+      //   },
+      // ],
       processingStatuses: [
         {
           text: 'Confirmed',
@@ -801,9 +815,9 @@ export default {
       },
       ethnicitySearchInput: null,
       genderSearchInput: null,
-      locationParentsSearchInput: null,
-      locationRaisedSearchInput: null,
-      pitchRangeSearchInput: null,
+      // locationParentsSearchInput: null,
+      // locationRaisedSearchInput: null,
+      // pitchRangeSearchInput: null,
     };
   },
   computed: {

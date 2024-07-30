@@ -102,6 +102,7 @@
                     </v-text-field>
                   </ValidationProvider>
                 </v-col>
+                <!---
                 <v-col class="pt-10" cols="12">
                   <p>
                     When this project is done, we will anonymize audio recordings and transcriptions. We won't share your name, or any information that could identify you.  Let us know below if you would like us to include your data in the research archives.
@@ -128,6 +129,8 @@
                     <v-text-field v-model="user.metadata.permission_share_research" class="d-none"></v-text-field>
                   </ValidationProvider>
                 </v-col>
+                --->
+                <!---
                 <v-col class="pt-5" cols="12">
                   <p>
                     Each week we select a few anonymized stories to feature online.
@@ -154,6 +157,7 @@
                     <v-text-field v-model="user.metadata.permission_share" class="d-none"></v-text-field>
                   </ValidationProvider>
                 </v-col>
+                --->
                 <!--- Optional payment opt-in/out --->
                 <!---
                 <v-col class="pt-5" cols="12">
