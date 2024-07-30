@@ -85,7 +85,7 @@
             </ValidationObserver>
           </template>
           <template v-slot:item.copyKey="{ item }">
-            <v-btn type="button" small v-clipboard="item.secret" @click="$store.dispatch('alert/display', { message: 'Copied!', timeout: 1000, icon: 'fa-smile' });">
+            <v-btn type="button" small v-clipboard="item.secret" @click="$store.dispatch('alert/display', { type: 'success', message: 'Copied!', timeout: 1000, icon: 'fa-smile' });">
               Copy Key
             </v-btn>
           </template>
