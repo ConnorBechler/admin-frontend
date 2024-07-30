@@ -24,6 +24,7 @@
   background-color: #7DBC94;
   color: black;
   .#{$vt-namespace}__icon {
+    padding-top: 2px;
     opacity: 0.7;
   }
   .#{$vt-namespace}__close-button {
@@ -33,8 +34,14 @@
 }
 
 .#{$vt-namespace}__toast--error.midrf {
-  background-color: #AE643A;
+  background-color: #FD9357;
+  color: black;
+  .#{$vt-namespace}__icon {
+    padding-top: 2px;
+    opacity: 0.7;
+  }
   .#{$vt-namespace}__close-button {
+    color: black;
     opacity: 0.7;
   }
 }
