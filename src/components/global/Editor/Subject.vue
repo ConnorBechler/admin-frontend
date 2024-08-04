@@ -176,6 +176,7 @@
                       :id="`${clone.id || clone.__id}-${prependField}participant_category`"
                       v-model="clone.metadata[prependField + 'participant_category']"
                       :items="participantCategories"
+                      multiple
                       item-text="name"
                       item-value="shortName"
                       :disabled="parentDisabled || selfDisabled"
@@ -878,6 +879,12 @@ export default {
     },
   },
   mounted() {
+    if (this.clone && this.clone.metadata) {
+      const tempParticipantCategory = this.clone.metadata[this.prependField + 'participant_category'];
+      if (tempParticipantCategory && tempParticipantCategory.length && typeof tempParticipantCategory !== 'object') {
+        this.clone.metadata[this.prependField + 'participant_category'] = [tempParticipantCategory];
+      }
+    }
     if (this.isAdmin) {
       extend('unique', {
         validate: this.isUnique,

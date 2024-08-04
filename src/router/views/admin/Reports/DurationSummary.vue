@@ -88,7 +88,11 @@
               </span>
             </template>
             <template v-slot:item.subjectMetadata.participant_category="{ item }">
-              {{ (item.subjectMetadata.participant_category) ? item.subjectMetadata.participant_category : '' }}
+              {{ (item.subjectMetadata.participant_category)
+                ? typeof item.subjectMetadata.participant_category === 'object'
+                  ? item.subjectMetadata.participant_category.join(', ')
+                  : item.subjectMetadata.participant_category
+                : '' }}
             </template>
             <template v-slot:item.shouldBePaid="{ item }">
               <v-icon :color="((item.diaryLengthTotal || 0).toFixed(1) >= Number(selectedDiaryPayPeriod.goal || 0)) ? 'msu' : 'msu accent-orange'">

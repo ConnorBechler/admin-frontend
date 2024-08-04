@@ -93,7 +93,11 @@
               </span>
             </template>
             <template v-slot:item.subjectMetadata.participant_category="{ item }">
-              {{ (item && item.subjectMetadata && item.subjectMetadata.participant_category) ? item.subjectMetadata.participant_category : '' }}
+              {{ (item && item.subjectMetadata && item.subjectMetadata.participant_category)
+                ? typeof item.subjectMetadata.participant_category === 'object'
+                  ? item.subjectMetadata.participant_category.join(', ')
+                  : item.subjectMetadata.participant_category
+                : '' }}
             </template>
             <template v-slot:item.actions="{ item }">
               <v-btn

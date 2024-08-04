@@ -55,7 +55,7 @@
               {text: 'SID', value: 'subjectId', width: '20%', sortable: false},
               {text: 'Pub', value: 'permissionShare', width: '10%', align: 'center', sortable: false},
               {text: 'Feat', value: 'metadata.interesting', width: '10%', align: 'center', sortable: false},
-              {text: 'Group', value: 'participantCategory', width: '10%', sortable: false},
+              {text: 'Category', value: 'participantCategory', width: '10%', sortable: false},
               {text: 'Diary #', value: 'dateCode', width: '25%', align: 'end', sortable: false},
               {text: 'Duration', value: 'metadata.duration', width: '10%', align: 'start', sortable: false},
               {text: '', value: 'actions', width: '10%', sortable: false},
@@ -125,8 +125,11 @@
             </template>
             <template v-slot:item.participantCategory="{ item }">
               <span v-if="item.profile.subjectId">
-                <!--- temporary workaround for list not updating after dialog editor adds sid --->
-                {{ item.participantCategory !== '' ? item.participantCategory : $FeathersVuex.api.Subject.getFromStore(item.profile.subjectId).metadata.participant_category }}
+                {{ (item.participant_category)
+                  ? typeof item.participant_category === 'object'
+                    ? item.participant_category.join(', ')
+                    : item.participant_category
+                  : '' }}
               </span>
             </template>
             <template v-slot:item.metadata.duration="{ item }">

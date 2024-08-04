@@ -8,7 +8,7 @@
             {text: 'First', value: 'first', width: '15%', sortable: false},
             {text: 'Email', value: 'email', sortable: false},
             {text: 'Status', value: 'metadata.processingStatus', width: '5%', align: 'center', sortable: false},
-            {text: 'Group', value: 'metadata.participant_category', width: '5%', sortable: false},
+            {text: 'Category', value: 'metadata.participant_category', width: '10%', sortable: false},
             {text: '', value: 'actions', width: '200px', align: 'end', sortable: false},
             {text: '', value: 'hidden', width: '5%', align: ($vuetify.breakpoint.smAndDown || !showHiddenSubjects) ? ' d-none' : '', sortable: false},
           ]"
@@ -86,7 +86,11 @@
               {{ (item.metadata.permission_share) ? 'Y' : 'N' }}
             </template>
             <template v-slot:item.metadata.participant_category="{ item }">
-              {{ (item.metadata.participant_category) ? item.metadata.participant_category : '' }}
+              {{ (item.metadata.participant_category)
+                ? typeof item.metadata.participant_category === 'object'
+                  ? item.metadata.participant_category.join(', ')
+                  : item.metadata.participant_category
+                : '' }}
             </template>
             <template v-slot:item.metadata.consent="{ item }">
               <v-icon small :color="(item.metadata.consent) ? 'green' : 'red'">
