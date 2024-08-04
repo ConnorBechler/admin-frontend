@@ -165,7 +165,7 @@
                 Coding
               </v-btn>
               <v-btn
-                v-else-if="!(item.subjectMetadataCoded.birthYear && item.subjectMetadataCoded.gender && item.subjectMetadataCoded.locationRaisedNotes)"
+                v-else-if="!(item.subjectMetadataCoded.birthYear && item.subjectMetadataCoded.gender)"
                 x-small
                 color="msu accent-orange white--text"
                 @click="showSubjectDetail(item)">

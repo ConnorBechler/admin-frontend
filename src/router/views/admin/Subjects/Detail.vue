@@ -2,7 +2,7 @@
   <v-container fluid v-if="isAuthenticated && currentSubject">
     <v-row justify="center" >
       <v-col cols="12" sm="10">
-        TODO: linked profiles, linked diaries
+        <!--- TODO: linked profiles, linked diaries --->
         <v-card>
           <v-card-title primary-title class="msu dark-grey text-center white--text">
             <h3>Subject Details</h3>
@@ -130,6 +130,7 @@
                       <v-list-item-subtitle class="text-body-1">Ethnicity: <span class="black--text">{{ currentSubject.metadata.ethnicity }}</span></v-list-item-subtitle>
                     </v-list-item-content>
                   </v-list-item>
+                  <!---
                   <v-list-item two-line>
                     <v-list-item-icon>
                       <v-icon small right>fa-map-marker</v-icon>
@@ -139,6 +140,8 @@
                       <v-list-item-subtitle class="text-body-1">Current: <span class="black--text">{{ currentSubject.metadata.locationCurrent }}</span></v-list-item-subtitle>
                     </v-list-item-content>
                   </v-list-item>
+                  --->
+                  <!---
                   <v-list-item three-line>
                     <v-list-item-icon>
                       <v-icon small right>fa-graduation-cap</v-icon>
@@ -147,6 +150,11 @@
                       <v-list-item-subtitle class="text-body-1">Education: <span class="black--text">{{ currentSubject.metadata.educationLevel ? currentSubject.metadata.educationLevel.join(', ') : null }}</span></v-list-item-subtitle>
                     </v-list-item-content>
                   </v-list-item>
+                  --->
+                </v-list>
+              </v-col>
+              <v-col cols="12" sm="6">
+                <v-list dense>
                   <v-list-item>
                     <v-list-item-icon>
                       <v-icon small right>fa-comments</v-icon>
@@ -155,10 +163,6 @@
                       <v-list-item-subtitle class="text-body-1">Heard: <span class="black--text">{{ currentSubject.metadata.source }}</span></v-list-item-subtitle>
                     </v-list-item-content>
                   </v-list-item>
-                </v-list>
-              </v-col>
-              <v-col cols="12" sm="6">
-                <v-list dense>
                   <v-list-item>
                     <v-list-item-icon>
                       <v-icon small right>fa-check-circle</v-icon>
@@ -167,6 +171,7 @@
                       <v-list-item-subtitle class="text-body-1">Consent: <span class="font-weight-bold" :class="currentSubject.metadata.consent ? 'msu--text' : 'red--text'">{{ (currentSubject.metadata.consent) ? 'Yes' : 'No' }}</span></v-list-item-subtitle>
                     </v-list-item-content>
                   </v-list-item>
+                  <!---
                   <v-list-item>
                     <v-list-item-icon>
                       <v-icon small right>fa-clock</v-icon>
@@ -175,6 +180,8 @@
                       <v-list-item-subtitle class="text-body-1">Prompts: <span class="black--text">{{ currentSubject.metadata.frequency }}</span></v-list-item-subtitle>
                     </v-list-item-content>
                   </v-list-item>
+                  --->
+                  <!---
                   <v-list-item two-line>
                     <v-list-item-icon>
                       <v-icon small right>fa-exclamation-triangle</v-icon>
@@ -184,6 +191,7 @@
                       <v-list-item-subtitle class="text-body-1">Archive Permission: <span class="font-weight-bold" :class="currentSubject.permission_share_research ? 'msu--text' : 'red--text'">{{ (currentSubject.permission_share_research) ? 'Yes' : 'No' }}</span></v-list-item-subtitle>
                     </v-list-item-content>
                   </v-list-item>
+                  --->
                   <v-list-item>
                     <v-list-item-icon>
                       <v-icon small right>fa-dollar-sign</v-icon>

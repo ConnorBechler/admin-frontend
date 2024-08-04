@@ -189,7 +189,7 @@
               </FeathersVuexFind>
             </v-row>
             <v-row>
-              <v-col class="py-2" cols="12" md="5">
+              <v-col class="py-2" cols="12">
                 <v-switch
                   :id="`${clone.id || clone.__id}-${prependField}consent`"
                   v-model="clone.metadata[prependField + 'consent']"
@@ -335,7 +335,7 @@
                 </v-text-field>
               </v-col>
               --->
-              <v-col class="py-2" cols="12">
+              <v-col class="py-2" cols="6">
                 <v-autocomplete
                   v-model="clone.metadata.educationLevel"
                   name="educationLevel"
@@ -519,6 +519,7 @@
                   type="text">
                 </v-textarea>
               </v-col>
+              <!---
               <v-col class="py-2" cols="12">
                 <v-textarea
                   v-model="clone.metadata.coded.residentialHistory"
@@ -531,6 +532,7 @@
                   type="text">
                 </v-textarea>
               </v-col>
+              --->
               <v-col class="py-2" cols="12">
                 <v-textarea
                   v-model="clone.metadata.coded.otherInfo"
