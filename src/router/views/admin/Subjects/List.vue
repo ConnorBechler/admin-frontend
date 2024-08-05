@@ -64,7 +64,7 @@
                           <template #actions-right>
                             <span>
                               <v-btn class="mr-2" @click="reset(); clearObjDialog();">Close</v-btn>
-                              <v-btn color="msu accent-green white--text" :disabled="!isDirty" @click="validate().then(valid => valid ? save().then(clearObjDialog) : null);">Save</v-btn>
+                              <v-btn color="msu accent-green white--text" @click="validate().then(valid => valid ? save().then(obj => clearObjDialog(obj)) : null);">Save</v-btn>
                             </span>
                           </template>
                         </EditorSubject>

@@ -15,6 +15,11 @@ extend('required', {
   message: '{_field_} is required.'
 });
 
+extend('requiredWhenNoSID', {
+  ...required,
+  message: '{_field_} is required without SID.'
+});
+
 extend('email', {
   ...email,
   message: 'Not a valid email address.'
