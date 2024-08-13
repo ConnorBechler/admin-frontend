@@ -125,11 +125,8 @@
             </template>
             <template v-slot:item.participantCategory="{ item }">
               <span v-if="item.profile.subjectId">
-                {{ (item.participant_category)
-                  ? typeof item.participant_category === 'object'
-                    ? item.participant_category.join(', ')
-                    : item.participant_category
-                  : '' }}
+                <!--- temporary workaround for list not updating after dialog editor adds sid --->
+                {{ item.participantCategory !== '' ? item.participantCategory : $FeathersVuex.api.Subject.getFromStore(item.profile.subjectId).metadata.participant_category }}
               </span>
             </template>
             <template v-slot:item.metadata.duration="{ item }">
