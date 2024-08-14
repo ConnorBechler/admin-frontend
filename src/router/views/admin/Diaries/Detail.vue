@@ -148,7 +148,15 @@
                         class="input-flip-flop flex-align-end"
                       />
                   </v-col>
-                  <v-col cols="12" sm="6">
+                  <v-col cols="12" class="d-flex justify-end">
+                    <v-btn
+                      :class="`${removeDiaryBtn.color} white--text`"
+                      :small="$vuetify.breakpoint.smAndDown"
+                      :disabled="removeDiaryBtn.disabled"
+                      @click.stop="removeDiary">
+                      <v-icon small class="mr-2">{{ removeDiaryBtn.icon }}</v-icon>
+                      {{ removeDiaryBtn.text }}
+                    </v-btn>
                   </v-col>
                 </v-row>
               </v-col>
@@ -745,6 +753,13 @@ export default {
       editedDictionaryWord: new this.$FeathersVuex.api.DictionaryWord(),
       editedObj: new this.$FeathersVuex.api.Profile(),
       editorTitle: '',
+      removeDiaryError: false,
+      removeDiaryBtn: {
+        text: 'Delete Diary',
+        color: 'red',
+        icon: 'fa-trash',
+        disabled: false,
+      },
       metadataIsRunning: false,
       transcriptIsRunning: false,
       isUploading: false,
@@ -962,6 +977,90 @@ export default {
             this.transcriptPanelsExpanded = [];
           }
         });
+    },
+    removeDiary() {
+      if (this.currentDiary.id) {
+        this.removeDiaryBtn.text = '... bye';
+        this.removeDiaryBtn.disabled = 'disabled';
+        feathersClient.service('adminMaintenance').create({
+          action: 'diary:remove',
+          id: this.currentDiary.id,
+          actuallyDelete: false,
+        })
+        .then((ret) => {
+          this.$confirm(`
+            Are you extra sure? This will delete the diary and:<br><br>
+            <ul>
+              <li><strong>${ret.relatedDocumentCount} files</strong></>
+              <li><strong>${ret.relatedTranscriptionCount} transcripts</strong></>
+              <li><strong>${ret.relatedTranscriptSentenceCount} sentences</strong></>
+            </ul><br>
+            from the file system and database.
+            `, 
+            {
+              title: 'Delete all diary data',
+              icon: 'fas fa-question',
+              color: 'msu',
+              buttonTrueText: 'Yes',
+              buttonFalseText: 'Whoops',
+            })
+            .then((conf) => {
+              if (conf) {
+                feathersClient.service('adminMaintenance').create({
+                  action: 'diary:remove',
+                  id: this.currentDiary.id,
+                  actuallyDelete: true,
+                })
+                .then((ret) => {
+                  this.$store.dispatch('alert/display',
+                    {
+                      type: 'success',
+                      message: 'Removed Diary and files!',
+                      timeout: 1000,
+                      icon: 'fa-thumbs-up',
+                    },
+                    { root: true });
+                  this.$router.push({ name: 'adminDiariesList' });
+                })
+                .catch((err) => {
+                  this.removeDiaryError = true;
+                  this.$store.dispatch('alert/display',
+                    {
+                      type: 'error',
+                      message: err.message,
+                      timeout: 2500,
+                      icon: 'fa-exclamation',
+                    },
+                    { root: true });
+                  setTimeout(() => {
+                    this.removeDiaryBtn.text = 'Delete Diary';
+                    this.removeDiaryBtn.disabled = false;
+                    Promise.resolve(true);
+                  }, 500);
+                });
+              } else {
+                this.removeDiaryBtn.text = 'Delete Diary';
+                this.removeDiaryBtn.disabled = false;
+              }
+            });
+        })
+        .catch((err) => {
+          this.removeDiaryError = true;
+          this.$store.dispatch('alert/display',
+            {
+              type: 'error',
+              message: err.message,
+              timeout: 2500,
+              icon: 'fa-exclamation',
+            },
+            { root: true });
+          setTimeout(() => {
+            this.removeDiaryBtn.text = 'Delete Diary';
+            this.removeDiaryBtn.disabled = false;
+            Promise.resolve(true);
+          }, 500);
+        });
+      }
     },
     fixMetadata() {
       if (this.currentDiary.metadata) {
