@@ -150,6 +150,7 @@
                   </v-col>
                   <v-col cols="12" class="d-flex justify-end">
                     <v-btn
+                      v-if="hasRole('admin')"
                       :class="`${removeDiaryBtn.color} white--text`"
                       :small="$vuetify.breakpoint.smAndDown"
                       :disabled="removeDiaryBtn.disabled"
