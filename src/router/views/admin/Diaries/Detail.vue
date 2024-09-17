@@ -103,6 +103,74 @@
                 <span v-if="currentDiary.profile && currentDiary.profile.subject && !currentDiary.profile.subject.id"> (was: {{ currentDiary.profile.subjectId }})</span><br>
                 Share Permission: <span class="font-weight-bold" :class="currentDiary.permissionShare ? 'msu--text' : 'red--text'">{{ (currentDiary.permissionShare) ? 'Yes' : 'No' }}</span><br>
                 Entry: <span class="font-weight-bold">{{ currentDiary.dateCode }}</span>
+                <ValidationObserver ref="diaryObserver" v-slot="{ invalid, validate }">
+                  <v-dialog
+                    v-model="showDiaryEditor"
+                    width="50%"
+                    :fullscreen="$vuetify.breakpoint.xs"
+                    persistent
+                    scrollable
+                    :transition="($vuetify.breakpoint.xs) ? 'dialog-bottom-transition' : 'fade-transition'">
+                    <template v-slot:activator="{ on, attrs }">
+                      <span
+                        class="text-caption pl-2 text-decoration-underline"
+                        style="cursor: pointer;"
+                        v-on="on">change</span>
+                    </template>
+                    <FeathersVuexFormWrapper :item="currentDiary" ref="diaryForm" watch>
+                      <template v-slot="{ clone, save, reset, isDirty }">
+                        <v-card>
+                          <v-card-title class="msu dark-grey text-center white--text">
+                            <span class="text-h5">Edit Diary</span>
+                            <v-spacer></v-spacer>
+                            <v-icon class="white--text">fa-user</v-icon>
+                          </v-card-title>
+                          <v-card-text>
+                            <v-container>
+                              <v-row>
+                                <v-col cols="12" sm="9" md="6">
+                                  <EditorDate
+                                    :clone="clone.metadata"
+                                    field="diaryDate"
+                                    label="Date of Recording"
+                                    :hide-details="true"
+                                    :maxDate="$moment().format('YYYY-MM-DD')"
+                                    :required="true"
+                                    :readonly="false">
+                                  </EditorDate>
+                                </v-col>
+                                <v-col cols="3" offset-md="2" sm="2" offset-sm="1">
+
+                                  <ValidationProvider
+                                    ref="sequence"
+                                    name="Sequence"
+                                    rules="required"
+                                    v-slot="{ errors }">
+                                    <v-text-field
+                                      :key="`${clone.id}-sequence`"
+                                      v-model.number="clone.metadata.sequence"
+                                      label="Sequence"
+                                      :error-messages="errors"
+                                      type="number"
+                                      :min="1"
+                                      :required="true">
+                                    </v-text-field>
+                                  </ValidationProvider>
+                                </v-col>
+                              </v-row>
+                            </v-container>
+                          </v-card-text>
+
+                          <v-card-actions>
+                            <v-spacer></v-spacer>
+                            <v-btn @click="reset(); clearDiaryDialog();">Cancel</v-btn>
+                            <v-btn color="msu accent-green white--text" @click="validate().then(valid => valid ? save().then(obj => clearDiaryDialog(obj)) : null);">Save</v-btn>
+                          </v-card-actions>
+                        </v-card>
+                      </template>
+                    </FeathersVuexFormWrapper>
+                  </v-dialog>
+                </ValidationObserver>
                 <span v-if="currentDiary.profile.metadata.manual"> (manual upload)</span><br>
                 Submitted: {{ currentDiary.createdAt | moment('MMM D YYYY @ h:mm A')}}<br>
                 Duration: {{ speakingTime(currentDiary.metadata.duration || 0, 'seconds') }}
@@ -749,6 +817,7 @@ export default {
         disabled: false,
       },
       analysisStatus: {},
+      showDiaryEditor: false,
       showProfileEditor: false,
       showDictionaryEditor: false,
       editedDictionaryWord: new this.$FeathersVuex.api.DictionaryWord(),
@@ -943,6 +1012,10 @@ export default {
     resetClone({ event, clone }) {
       clone.reset();
       event.target.blur();
+    },
+    clearDiaryDialog() {
+      this.showDiaryEditor = false;
+      this.$refs.diaryObserver.reset();
     },
     clearProfileDialog() {
       this.showProfileEditor = false;
