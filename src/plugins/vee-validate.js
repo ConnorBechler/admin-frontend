@@ -1,7 +1,7 @@
 /* eslint-disable */
 import Vue from 'vue';
 import { ValidationProvider, ValidationObserver, extend } from 'vee-validate';
-import { required, email, min, min_value, date } from 'vee-validate/dist/rules';
+import { required, email, min, min_value } from 'vee-validate/dist/rules';
 import en from 'vee-validate/dist/locale/en';
 
 extend('password', {

@@ -46,7 +46,9 @@
                   </v-switch>
                 </v-col>
                 --->
-                <v-col cols="12" class="d-flex justify-end py-1">
+                <v-col cols="12" md="6" class="d-flex justify-start py-1">
+                </v-col>
+                <v-col cols="12" md="6" class="d-flex justify-end py-1">
                   <v-switch
                     :id="`${clone.id || clone.__id}-${prependField}hidden`"
                     v-model="clone[prependField + 'hidden']"
@@ -55,6 +57,20 @@
                     :hide-details="true"
                     name="hidden"
                     label="Hide Subject?"
+                    color="msu">
+                  </v-switch>
+                </v-col>
+                <v-col cols="12" md="6" class="d-flex justify-start py-1">
+                </v-col>
+                <v-col cols="12" md="6" class="d-flex justify-end py-1">
+                  <v-switch
+                    :id="`${clone.id || clone.__id}-${prependField}notForResearch`"
+                    v-model="clone.metadata[prependField + 'notForResearch']"
+                    :disabled="parentDisabled || selfDisabled"
+                    class="input-flip-flop flex-align-end"
+                    :hide-details="true"
+                    name="notForResearch"
+                    label="Not For Research?"
                     color="msu">
                   </v-switch>
                 </v-col>

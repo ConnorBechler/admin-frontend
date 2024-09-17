@@ -90,6 +90,16 @@
                         class="input-flip-flop flex-align-end"
                       />
                   </v-col>
+                  <v-col cols="12" class="d-flex justify-end">
+                      <v-switch
+                        label="Not For Research?"
+                        :input-value="currentSubject.metadata.notForResearch"
+                        @change="toggle('notForResearch', 'metadata')"
+                        :hide-details="true"
+                        color="msu"
+                        class="input-flip-flop flex-align-end"
+                      />
+                  </v-col>
                   <v-col cols="12" sm="6">
                   </v-col>
                 </v-row>

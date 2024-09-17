@@ -208,6 +208,16 @@
                   </v-col>
                   <v-col cols="12" class="d-flex justify-end">
                       <v-switch
+                        label="Not For Research?"
+                        :input-value="currentDiary.metadata.notForResearch"
+                        @change="toggle('notForResearch', 'metadata')"
+                        :hide-details="true"
+                        color="msu"
+                        class="input-flip-flop flex-align-end"
+                      />
+                  </v-col>
+                  <v-col cols="12" class="d-flex justify-end">
+                      <v-switch
                         label="Feature Diary?"
                         :input-value="currentDiary.metadata.interesting"
                         @change="toggle('interesting', 'metadata')"
