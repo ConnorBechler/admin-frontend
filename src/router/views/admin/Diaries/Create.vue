@@ -108,6 +108,7 @@
                   <v-card-text>
                     <v-container>
                       <DiaryUploader
+                        :key="`${selectedProfile.id}-uploader`"
                         :profileId="selectedProfile.id"
                         :multiple="true">
                       </DiaryUploader>

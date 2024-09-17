@@ -1,68 +1,77 @@
 <template>
   <span>
-    <v-row>
-      <v-col cols="12" md="6">
-        <v-menu
-          ref="menu"
-          v-model="menu"
-          :close-on-content-click="false"
-          :return-value.sync="selectedDate"
-          transition="scale-transition"
-          offset-y
-          min-width="290px"
-        >
-          <template v-slot:activator="{ on }">
-            <v-text-field
-              v-model="selectedDate"
-              label="Diary Date"
-              clearable
-              prepend-icon="fa-calendar"
-              @input="updateDate(selectedDate)"
-              v-on="on"
-              hint="YYYY-MM-DD"
-              :persistent-hint="true"
-            ></v-text-field>
-          </template>
-          <v-date-picker
-            ref="picker"
-            v-model="selectedDate"
-            color="msu"
+    <ValidationObserver ref="uploadObserver" v-slot="{ invalid, validate }">
+      <v-row>
+        <v-col cols="12" md="6">
+          <v-menu
+            ref="menu"
+            v-model="menu"
+            :close-on-content-click="false"
+            :return-value.sync="selectedDate"
+            transition="scale-transition"
+            offset-y
+            min-width="290px"
           >
-            <v-spacer></v-spacer>
-            <v-btn text color="primary" @click="menu = false">Cancel</v-btn>
-            <v-btn text color="primary" @click="updateDate(selectedDate)">OK</v-btn>
-          </v-date-picker>
-        </v-menu>
-      </v-col>
-      <v-col cols="12" md="8">
-        <v-file-input :label="(multiple) ? 'Select file(s)' : 'Select a file'" v-model="fileList" :disabled="isUploading" ref="fileInput" name="file" :loading="isUploading" :multiple="multiple" chips></v-file-input>
-      </v-col>
-      <v-col cols="12" md="4">
-        <v-switch
-          label="Transcribe?"
-          v-model="transcribeEnabled"
-          :hide-details="true"
-          color="msu"
-        />
-      </v-col>
-    </v-row>
-    <v-row>
-      <v-col cols="12" md="2" class="d-flex">
-        <v-btn
-          type="button"
-          class="flex-grow-1"
-          @click.stop="uploadFile"
-          :disabled="!fileList || !selectedDate"
-          :loading="isUploading"
-          :color="fileUploadBtn.color">
-          <v-icon v-if="fileUploadBtn.icon" color="white" v-text="fileUploadBtn.icon"></v-icon>
-          {{ this.fileUploadBtn.text }}
-          <span slot="loader">
-            {{ uploadProgress }}%
-          </span>
-        </v-btn>
-      </v-col>
-    </v-row>
+            <template v-slot:activator="{ on }">
+              <ValidationProvider
+                :ref="selectedDate"
+                name="Diary Date"
+                rules="required|date_format:YYYY-MM-DD"
+                v-slot="{ errors }">
+                <v-text-field
+                  v-model="selectedDate"
+                  label="Diary Date"
+                  :error-messages="errors"
+                  clearable
+                  prepend-icon="fa-calendar"
+                  v-on="on"
+                  hint="YYYY-MM-DD"
+                  :persistent-hint="true"
+                  @change="updateDate(selectedDate)"
+                ></v-text-field>
+              </ValidationProvider>
+            </template>
+            <v-date-picker
+              ref="picker"
+              v-model="selectedDate"
+              color="msu"
+              @change="updateDate(selectedDate)"
+            >
+              <v-spacer></v-spacer>
+              <v-btn text color="primary" @click="menu = false">Cancel</v-btn>
+            </v-date-picker>
+          </v-menu>
+        </v-col>
+        <v-col cols="12" md="8">
+          <v-file-input :label="(multiple) ? 'Select file(s)' : 'Select a file'" v-model="fileList" :disabled="isUploading" ref="fileInput" name="file" :loading="isUploading" :multiple="multiple" chips></v-file-input>
+        </v-col>
+        <v-col cols="12" md="4">
+          <v-switch
+            label="Transcribe?"
+            v-model="transcribeEnabled"
+            :hide-details="true"
+            color="msu"
+          />
+        </v-col>
+      </v-row>
+      <v-row>
+        <v-col cols="12" md="2" class="d-flex">
+          <v-btn
+            type="button"
+            class="flex-grow-1"
+            @click.stop="uploadFile"
+            :disabled="!fileList || !validDate(selectedDate)"
+            :loading="isUploading"
+            :color="fileUploadBtn.color">
+            <v-icon v-if="fileUploadBtn.icon" color="white" v-text="fileUploadBtn.icon"></v-icon>
+            {{ fileUploadBtn.text }}
+            <span slot="loader">
+              {{ uploadProgress }}%
+            </span>
+          </v-btn>
+        </v-col>
+      </v-row>
+    </ValidationObserver>
   </span>
 </template>
 
@@ -123,6 +132,21 @@ export default {
     };
   },
   methods: {
+    validDate(value) {
+      const regex = /^\d{4}-\d{2}-\d{2}$/;
+      if (!regex.test(value)) {
+        return false;
+      }
+      const date = new Date(value);
+      const isValidDate = date instanceof Date && !isNaN(date);
+
+      const [year, month, day] = value.split('-');
+      const dateYear = date.getUTCFullYear().toString();
+      const dateMonth = (date.getUTCMonth() + 1).toString().padStart(2, '0');
+      const dateDay = date.getUTCDate().toString().padStart(2, '0');
+
+      return isValidDate && year === dateYear && month === dateMonth && day === dateDay;
+    },
     updateDate(date) {
       this.$refs.menu.save(date);
       this.selectedDate = date;
