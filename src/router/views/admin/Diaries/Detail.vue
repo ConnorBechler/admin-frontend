@@ -513,6 +513,9 @@
                                   <span v-if="item.type === 'LONG'">
                                     Split into multiple chunks with new start/end
                                   </span>
+                                  <span v-if="item.type === 'NUMBERS'">
+                                    Spell out number(s)
+                                  </span>
                                 </template>
                               </v-data-table>
                             </v-col>
