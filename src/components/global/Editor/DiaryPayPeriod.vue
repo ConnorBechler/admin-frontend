@@ -42,7 +42,7 @@
         <ValidationProvider
           ref="goal"
           name="Goal"
-          rules="required"
+          rules="required|positive_value|min_value:1"
           v-slot="{ errors }">
           <v-text-field
             v-model="clone.goal"
@@ -52,6 +52,7 @@
             :error-messages="errors"
             label="Goal"
             type="number"
+            min="1"
             hint="minutes"
             :persistent-hint="true"
             autocomplete="nope">

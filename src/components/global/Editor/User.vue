@@ -83,6 +83,16 @@
             color="msu">
           </v-switch>
         </v-col>
+        <v-col cols="12" md="6">
+          <v-switch
+            :id="`${clone.id || clone.__id}-${prependField}hidden`"
+            v-model="clone[prependField + 'hidden']"
+            :disabled="parentDisabled || selfDisabled"
+            name="userHidden"
+            label="Hidden"
+            color="msu">
+          </v-switch>
+        </v-col>
       </v-row>
       <span v-if="showControls">
         <v-row v-if="!standalone">

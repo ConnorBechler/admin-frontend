@@ -41,9 +41,9 @@ export default makeAuthPlugin({
   },
   getters: {
     isAdmin: (state, getters) => getters.hasRole('admin,super'),
-    hasRole: (state, getters) => rolesToCheck => getters.user ? (rolesToCheck.split(',').some(needs => getters.user.roles.some(role => role.toLowerCase().indexOf(needs.trim().toLowerCase()) !== -1))) : false,
+    hasRole: (state, getters) => rolesToCheck => getters.user ? rolesToCheck.split(',').map(role => role.trim().toLowerCase()).some(needs => getters.user.roles.some(role => role.toLowerCase() === needs)) : false,
     isRA: (state, getters) => getters.hasRole('ra,ga'),
-    isElevated: (state, getters) => (getters.isRA || getters.isAdmin),
+    isElevated: (state, getters) => (getters.isRA || getters.hasRole('transcriptManager') || getters.hasRole('researchManager') || getters.isAdmin),
   },
   actions: {
     /* eslint-disable-next-line */

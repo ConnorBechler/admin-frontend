@@ -8,7 +8,7 @@
             {text: 'First', value: 'first', width: '15%', sortable: false},
             {text: 'Email', value: 'email', sortable: false},
             {text: 'Status', value: 'metadata.processingStatus', width: '5%', align: 'center', sortable: false},
-            {text: 'Group', value: 'metadata.age_category', width: '5%', sortable: false},
+            {text: 'Category', value: 'metadata.participant_category', width: '10%', sortable: false},
             {text: '', value: 'actions', width: '200px', align: 'end', sortable: false},
             {text: '', value: 'hidden', width: '5%', align: ($vuetify.breakpoint.smAndDown || !showHiddenSubjects) ? ' d-none' : '', sortable: false},
           ]"
@@ -64,7 +64,7 @@
                           <template #actions-right>
                             <span>
                               <v-btn class="mr-2" @click="reset(); clearObjDialog();">Close</v-btn>
-                              <v-btn color="msu accent-green white--text" :disabled="!isDirty" @click="validate().then(valid => valid ? save().then(clearObjDialog) : null);">Save</v-btn>
+                              <v-btn color="msu accent-green white--text" @click="validate().then(valid => valid ? save().then(obj => clearObjDialog(obj)) : null);">Save</v-btn>
                             </span>
                           </template>
                         </EditorSubject>
@@ -85,8 +85,12 @@
             <template v-slot:item.metadata.permission_share="{ item }">
               {{ (item.metadata.permission_share) ? 'Y' : 'N' }}
             </template>
-            <template v-slot:item.metadata.age_category="{ item }">
-              {{ (item.metadata.age_category) ? item.metadata.age_category : '' }}
+            <template v-slot:item.metadata.participant_category="{ item }">
+              {{ (item.metadata.participant_category)
+                ? typeof item.metadata.participant_category === 'object'
+                  ? item.metadata.participant_category.join(', ')
+                  : item.metadata.participant_category
+                : '' }}
             </template>
             <template v-slot:item.metadata.consent="{ item }">
               <v-icon small :color="(item.metadata.consent) ? 'green' : 'red'">

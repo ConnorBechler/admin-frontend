@@ -42,7 +42,7 @@
               :disabled="parentDisabled"
               :error-messages="errors"
               name="name"
-              label="Group name"
+              label="Category name"
               type="text"
               :autocomplete="(autofill) ? '' : 'nope'">
             </v-text-field>

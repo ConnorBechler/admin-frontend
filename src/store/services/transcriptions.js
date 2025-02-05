@@ -56,7 +56,7 @@ class Transcription extends BaseModel {
     } else {
       if (this.passing) {
         if (this.metadata.hasChanged) {
-          ret.class = 'msu accent-purple';
+          ret.class = 'msu accent-dark-blue';
           ret.text = 'Changed';
         } else {
           ret.class = 'msu';
@@ -77,7 +77,7 @@ class Transcription extends BaseModel {
       }
     }
 
-    ret.class += ' white--text ml-2 font-weight-bold';
+    ret.class += ' white--text font-weight-bold';
 
     return ret;
   }

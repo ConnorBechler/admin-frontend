@@ -56,17 +56,24 @@ export default {
           text: 'Research',
           icon: 'fa-clipboard-list',
           path: '/admin/research',
-          roles: 'researchManager',
           children: [
+            // {
+            //   text: 'Data Builder',
+            //   icon: 'fa-trowel-bricks',
+            //   route: 'adminResearchBuilderSimple',
+            //   roles: 'researchManager',
+            // },
             {
               text: 'Processing Jobs',
               icon: 'fa-bars-progress',
               route: 'adminResearchProcessingJobsList',
+              roles: 'researchManager',
             },
             {
               text: 'Workers',
               icon: 'fa-microchip',
               route: 'adminResearchRemoteWorkersList',
+              roles: 'researchManager',
             },
           ],
         },
@@ -76,8 +83,8 @@ export default {
           path: '/admin/manage',
           children: [
             {
-              text: 'Age Groups',
-              icon: 'fa-birthday-cake',
+              text: 'Participant Categories',
+              icon: 'fa-people-group',
               route: 'adminParticipantCategoriesList',
             },
             {

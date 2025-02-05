@@ -16,4 +16,6 @@ Vue.use(Toast, {
   hideCloseButton: false,
   hideProgressBar: false,
   icon: false,
+  toastClassName: 'midrf',
+  bodyClassName: ['midrf'],
 });

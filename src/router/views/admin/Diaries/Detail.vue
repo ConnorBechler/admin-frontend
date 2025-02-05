@@ -103,6 +103,74 @@
                 <span v-if="currentDiary.profile && currentDiary.profile.subject && !currentDiary.profile.subject.id"> (was: {{ currentDiary.profile.subjectId }})</span><br>
                 Share Permission: <span class="font-weight-bold" :class="currentDiary.permissionShare ? 'msu--text' : 'red--text'">{{ (currentDiary.permissionShare) ? 'Yes' : 'No' }}</span><br>
                 Entry: <span class="font-weight-bold">{{ currentDiary.dateCode }}</span>
+                <ValidationObserver ref="diaryObserver" v-slot="{ invalid, validate }">
+                  <v-dialog
+                    v-model="showDiaryEditor"
+                    width="50%"
+                    :fullscreen="$vuetify.breakpoint.xs"
+                    persistent
+                    scrollable
+                    :transition="($vuetify.breakpoint.xs) ? 'dialog-bottom-transition' : 'fade-transition'">
+                    <template v-slot:activator="{ on, attrs }">
+                      <span
+                        class="text-caption pl-2 text-decoration-underline"
+                        style="cursor: pointer;"
+                        v-on="on">change</span>
+                    </template>
+                    <FeathersVuexFormWrapper :item="currentDiary" ref="diaryForm" watch>
+                      <template v-slot="{ clone, save, reset, isDirty }">
+                        <v-card>
+                          <v-card-title class="msu dark-grey text-center white--text">
+                            <span class="text-h5">Edit Diary</span>
+                            <v-spacer></v-spacer>
+                            <v-icon class="white--text">fa-user</v-icon>
+                          </v-card-title>
+                          <v-card-text>
+                            <v-container>
+                              <v-row>
+                                <v-col cols="12" sm="9" md="6">
+                                  <EditorDate
+                                    :clone="clone.metadata"
+                                    field="diaryDate"
+                                    label="Date of Recording"
+                                    :hide-details="true"
+                                    :maxDate="$moment().format('YYYY-MM-DD')"
+                                    :required="true"
+                                    :readonly="false">
+                                  </EditorDate>
+                                </v-col>
+                                <v-col cols="3" offset-md="2" sm="2" offset-sm="1">
+
+                                  <ValidationProvider
+                                    ref="sequence"
+                                    name="Sequence"
+                                    rules="required"
+                                    v-slot="{ errors }">
+                                    <v-text-field
+                                      :key="`${clone.id}-sequence`"
+                                      v-model.number="clone.metadata.sequence"
+                                      label="Sequence"
+                                      :error-messages="errors"
+                                      type="number"
+                                      :min="1"
+                                      :required="true">
+                                    </v-text-field>
+                                  </ValidationProvider>
+                                </v-col>
+                              </v-row>
+                            </v-container>
+                          </v-card-text>
+
+                          <v-card-actions>
+                            <v-spacer></v-spacer>
+                            <v-btn @click="reset(); clearDiaryDialog();">Cancel</v-btn>
+                            <v-btn color="msu accent-green white--text" @click="validate().then(valid => valid ? save().then(obj => clearDiaryDialog(obj)) : null);">Save</v-btn>
+                          </v-card-actions>
+                        </v-card>
+                      </template>
+                    </FeathersVuexFormWrapper>
+                  </v-dialog>
+                </ValidationObserver>
                 <span v-if="currentDiary.profile.metadata.manual"> (manual upload)</span><br>
                 Submitted: {{ currentDiary.createdAt | moment('MMM D YYYY @ h:mm A')}}<br>
                 Duration: {{ speakingTime(currentDiary.metadata.duration || 0, 'seconds') }}
@@ -140,6 +208,16 @@
                   </v-col>
                   <v-col cols="12" class="d-flex justify-end">
                       <v-switch
+                        label="Not For Research?"
+                        :input-value="currentDiary.metadata.notForResearch"
+                        @change="toggle('notForResearch', 'metadata')"
+                        :hide-details="true"
+                        color="msu"
+                        class="input-flip-flop flex-align-end"
+                      />
+                  </v-col>
+                  <v-col cols="12" class="d-flex justify-end">
+                      <v-switch
                         label="Feature Diary?"
                         :input-value="currentDiary.metadata.interesting"
                         @change="toggle('interesting', 'metadata')"
@@ -148,7 +226,16 @@
                         class="input-flip-flop flex-align-end"
                       />
                   </v-col>
-                  <v-col cols="12" sm="6">
+                  <v-col cols="12" class="d-flex justify-end">
+                    <v-btn
+                      v-if="hasRole('admin')"
+                      :class="`${removeDiaryBtn.color} white--text`"
+                      :small="$vuetify.breakpoint.smAndDown"
+                      :disabled="removeDiaryBtn.disabled"
+                      @click.stop="removeDiary">
+                      <v-icon small class="mr-2">{{ removeDiaryBtn.icon }}</v-icon>
+                      {{ removeDiaryBtn.text }}
+                    </v-btn>
                   </v-col>
                 </v-row>
               </v-col>
@@ -303,9 +390,6 @@
                               </span>
                             </v-col>
                             <v-col cols="12" sm="6" class="pt-0 px-0" :class="($vuetify.breakpoint.smAndUp) ? 'text-right' : ''">
-                              <v-chip class="msu lighten-1 white--text" v-if="transcript.edited">
-                                Corrected
-                              </v-chip>
                               <span v-if="transcript.status === 99">
                                 <span v-if="analysisStatus[transcript.id]">
                                   <v-chip class="msu light-grey black--text ml-2 font-weight-bold">
@@ -373,14 +457,6 @@
                               Actions:
                               <v-btn
                                 small
-                                class="white--text controls-row ml-2"
-                                @click.stop="transcript.metadata.locked ? null : toggleEdited(transcript)"
-                                :disabled="analysisStatus[transcript.id] || transcript.metadata.locked"
-                                color="msu lighten-1">
-                                {{ (transcript.edited) ? 'Unmark as Corrected' : 'Mark as Corrected'}}
-                              </v-btn>
-                              <v-btn
-                                small
                                 class="white--text controls-row float-right"
                                 @click.stop="transcript.metadata.locked ? null : removeTranscript(transcript)"
                                 :disabled="analysisStatus[transcript.id] || transcript.metadata.locked"
@@ -436,6 +512,9 @@
                                   </span>
                                   <span v-if="item.type === 'LONG'">
                                     Split into multiple chunks with new start/end
+                                  </span>
+                                  <span v-if="item.type === 'NUMBERS'">
+                                    Spell out number(s)
                                   </span>
                                 </template>
                               </v-data-table>
@@ -751,11 +830,19 @@ export default {
         disabled: false,
       },
       analysisStatus: {},
+      showDiaryEditor: false,
       showProfileEditor: false,
       showDictionaryEditor: false,
       editedDictionaryWord: new this.$FeathersVuex.api.DictionaryWord(),
       editedObj: new this.$FeathersVuex.api.Profile(),
       editorTitle: '',
+      removeDiaryError: false,
+      removeDiaryBtn: {
+        text: 'Delete Diary',
+        color: 'red',
+        icon: 'fa-trash',
+        disabled: false,
+      },
       metadataIsRunning: false,
       transcriptIsRunning: false,
       isUploading: false,
@@ -939,14 +1026,12 @@ export default {
       clone.reset();
       event.target.blur();
     },
+    clearDiaryDialog() {
+      this.showDiaryEditor = false;
+      this.$refs.diaryObserver.reset();
+    },
     clearProfileDialog() {
       this.showProfileEditor = false;
-    },
-    toggleEdited(transcript) {
-      const clone = transcript.clone();
-      clone.edited = !clone.edited;
-      clone.commit();
-      clone.save();
     },
     toggle(prop, sub) {
       const clone = this.currentDiary.clone();
@@ -979,6 +1064,90 @@ export default {
             this.transcriptPanelsExpanded = [];
           }
         });
+    },
+    removeDiary() {
+      if (this.currentDiary.id) {
+        this.removeDiaryBtn.text = '... bye';
+        this.removeDiaryBtn.disabled = 'disabled';
+        feathersClient.service('adminMaintenance').create({
+          action: 'diary:remove',
+          id: this.currentDiary.id,
+          actuallyDelete: false,
+        })
+        .then((ret) => {
+          this.$confirm(`
+            Are you extra sure? This will delete the diary and:<br><br>
+            <ul>
+              <li><strong>${ret.relatedDocumentCount} files</strong></>
+              <li><strong>${ret.relatedTranscriptionCount} transcripts</strong></>
+              <li><strong>${ret.relatedTranscriptSentenceCount} sentences</strong></>
+            </ul><br>
+            from the file system and database.
+            `, 
+            {
+              title: 'Delete all diary data',
+              icon: 'fas fa-question',
+              color: 'msu',
+              buttonTrueText: 'Yes',
+              buttonFalseText: 'Whoops',
+            })
+            .then((conf) => {
+              if (conf) {
+                feathersClient.service('adminMaintenance').create({
+                  action: 'diary:remove',
+                  id: this.currentDiary.id,
+                  actuallyDelete: true,
+                })
+                .then((ret) => {
+                  this.$store.dispatch('alert/display',
+                    {
+                      type: 'success',
+                      message: 'Removed Diary and files!',
+                      timeout: 1000,
+                      icon: 'fa-thumbs-up',
+                    },
+                    { root: true });
+                  this.$router.push({ name: 'adminDiariesList' });
+                })
+                .catch((err) => {
+                  this.removeDiaryError = true;
+                  this.$store.dispatch('alert/display',
+                    {
+                      type: 'error',
+                      message: err.message,
+                      timeout: 2500,
+                      icon: 'fa-exclamation',
+                    },
+                    { root: true });
+                  setTimeout(() => {
+                    this.removeDiaryBtn.text = 'Delete Diary';
+                    this.removeDiaryBtn.disabled = false;
+                    Promise.resolve(true);
+                  }, 500);
+                });
+              } else {
+                this.removeDiaryBtn.text = 'Delete Diary';
+                this.removeDiaryBtn.disabled = false;
+              }
+            });
+        })
+        .catch((err) => {
+          this.removeDiaryError = true;
+          this.$store.dispatch('alert/display',
+            {
+              type: 'error',
+              message: err.message,
+              timeout: 2500,
+              icon: 'fa-exclamation',
+            },
+            { root: true });
+          setTimeout(() => {
+            this.removeDiaryBtn.text = 'Delete Diary';
+            this.removeDiaryBtn.disabled = false;
+            Promise.resolve(true);
+          }, 500);
+        });
+      }
     },
     fixMetadata() {
       if (this.currentDiary.metadata) {

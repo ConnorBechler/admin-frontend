@@ -62,9 +62,11 @@ class Diary extends BaseModel {
     }
   }
 
-  get ageCategory() {
+  get participantCategory() {
     if (this.profile.subjectId && this.profile.subject && this.profile.subject.metadata) {
-      return this.profile.subject.metadata.age_category;
+      return typeof this.profile.subject.metadata.participant_category === 'object'
+        ? this.profile.subject.metadata.participant_category.join(', ')
+        : this.profile.subject.metadata.participant_category;
     } else {
       return '';
     }

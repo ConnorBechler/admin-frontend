@@ -103,12 +103,20 @@
               fa-pencil-alt
             </v-icon>
             <v-icon
-              v-if="hasRole('admin')"
+              v-if="hasRole('admin') && item.active"
               small
               class="mr-5"
               color="red"
-              @click="removeObj(item)">
+              @click="deactivateUser(item)">
               fa-trash
+            </v-icon>
+            <v-icon
+              v-if="hasRole('admin') && !item.active"
+              small
+              class="mr-5"
+              color="msu"
+              @click="reactivateUser(item)">
+              fa-undo
             </v-icon>
           </template>
           <template v-slot:footer v-if="hasRole('admin')">
@@ -215,10 +223,10 @@ export default {
       this.editedObj = new this.$FeathersVuex.api.User();
       this.$refs.editorObserver.reset();
     },
-    removeObj(obj) {
-      this.$confirm('Are you sure you want to delete this User?', 
+    deactivateUser(obj) {
+      this.$confirm('Disable and hide user?', 
         {
-          title: 'Delete User',
+          title: 'Disable User',
           icon: 'fas fa-question',
           color: 'msu',
           buttonTrueText: 'Yes',
@@ -227,7 +235,27 @@ export default {
         .then((conf) => {
           if (conf) {
             const clone = obj.clone();
-            clone.remove();
+            clone.active = false;
+            clone.hidden = true;
+            clone.save();
+          }
+        });
+    },
+    reactivateUser(obj) {
+      this.$confirm('Reenable and unhide user?', 
+        {
+          title: 'Reenable User',
+          icon: 'fas fa-question',
+          color: 'msu',
+          buttonTrueText: 'Yes',
+          buttonFalseText: 'Whoops',
+        })
+        .then((conf) => {
+          if (conf) {
+            const clone = obj.clone();
+            clone.active = true;
+            clone.hidden = false;
+            clone.save();
           }
         });
     },

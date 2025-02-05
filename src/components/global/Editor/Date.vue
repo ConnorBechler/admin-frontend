@@ -13,12 +13,11 @@
         <ValidationProvider
           :ref="field"
           :name="label"
-          :rules="required ? 'required' : ''"
+          :rules="required ? 'required|date_format:YYYY-MM-DD' : 'date_format:YYYY-MM-DD'"
           v-slot="{ errors }">
           <v-text-field
             v-model="clone[field]"
             :label="label"
-            readonly
             :disabled="parentDisabled"
             :error-messages="errors"
             clearable
@@ -27,6 +26,7 @@
             v-on="on"
             hint="YYYY-MM-DD"
             :persistent-hint="true"
+            @change="updateDate(clone[field])"
           ></v-text-field>
         </ValidationProvider>
       </template>
@@ -55,6 +55,10 @@ export default {
   props: {
     clone: Object,
     field: String,
+    readonly: {
+      type: Boolean,
+      default: false,
+    },
     parentDisabled: {
       type: Boolean,
       default: false,

@@ -5,7 +5,7 @@
         <v-data-table
           :headers="[
             {text: 'SID', value: 'subjectId', align: 'left'},
-            {text: 'Category', value: 'subjectMetadata.age_category', align: 'left'},
+            {text: 'Category', value: 'subjectMetadata.participant_category', align: 'left'},
             {text: '# Diaries', value: 'diaryCount', align: ($vuetify.breakpoint.smAndDown) ? ' d-none' : 'center'},
             {text: 'Total (min)', value: 'diaryLengthTotal', align: 'right'},
             {text: 'Qualifies?', value: 'shouldBePaid', align: 'center', sortable: false},
@@ -87,8 +87,12 @@
                 {{ (item.diaryLengthTotal || 0).toFixed(1) }}
               </span>
             </template>
-            <template v-slot:item.subjectMetadata.age_category="{ item }">
-              {{ (item.subjectMetadata.age_category) ? item.subjectMetadata.age_category : '' }}
+            <template v-slot:item.subjectMetadata.participant_category="{ item }">
+              {{ (item.subjectMetadata.participant_category)
+                ? typeof item.subjectMetadata.participant_category === 'object'
+                  ? item.subjectMetadata.participant_category.join(', ')
+                  : item.subjectMetadata.participant_category
+                : '' }}
             </template>
             <template v-slot:item.shouldBePaid="{ item }">
               <v-icon :color="((item.diaryLengthTotal || 0).toFixed(1) >= Number(selectedDiaryPayPeriod.goal || 0)) ? 'msu' : 'msu accent-orange'">
