@@ -68,13 +68,13 @@ export default [
       {
         path: 'research',
         component: LayoutBlank,
-        meta: {
-          roleRequired: 'researchManager',
-        },
         children: [
           {
             path: 'processingJobs',
             component: LayoutBlank,
+            meta: {
+              roleRequired: 'researchManager',
+            },
             children: [
               {
                 path: '',
@@ -86,6 +86,9 @@ export default [
           {
             path: 'remoteWorkers',
             component: LayoutBlank,
+            meta: {
+              roleRequired: 'researchManager',
+            },
             children: [
               {
                 path: '',
