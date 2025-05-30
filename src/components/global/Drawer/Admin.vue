@@ -52,7 +52,7 @@ export default {
           roles: 'transcriptManager',
           route: 'adminTranscriptionManagerList',
         },
-        {
+        /*{
           text: 'Research',
           icon: 'fa-clipboard-list',
           path: '/admin/research',
@@ -76,7 +76,7 @@ export default {
               roles: 'researchManager',
             },
           ],
-        },
+        },*/
         {
           text: 'Manage',
           icon: 'fa-cogs',
@@ -87,7 +87,7 @@ export default {
               icon: 'fa-people-group',
               route: 'adminParticipantCategoriesList',
             },
-            {
+            /*{
               text: 'Payment Groups',
               icon: 'fa-dollar-sign',
               route: 'adminPaymentGroupsList',
@@ -96,7 +96,7 @@ export default {
               text: 'Payment Periods',
               icon: 'far fa-calendar-alt',
               route: 'adminDiaryPayPeriodsList',
-            },
+            },*/
             {
               text: 'Users',
               icon: 'fa-users',

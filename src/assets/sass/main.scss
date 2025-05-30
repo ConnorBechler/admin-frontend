@@ -1,11 +1,11 @@
 div.error--text *{
-  color: red !important;
+  color: #E7115E !important;
 }
 div.warning--text *{
-  color: orange !important;
+  color: #FC9313 !important;
 }
 div.success--text *{
-  color: #048207 !important;
+  color: #018943 !important;
 }
 
 div.error--text:not(:first-of-type),

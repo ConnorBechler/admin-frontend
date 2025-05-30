@@ -3,8 +3,8 @@
     TOOD: move top nav buttons and user/login button to hambugerstack for mobile
   --->
   <v-app-bar app clipped-left class="msu">
-    <v-btn text to="/admin" :ripple="false" class="appname white--text">
-      <v-icon>fa-home</v-icon>
+    <v-btn text to="/admin" :ripple="false" class="appname white--text" color="msu accent-green">
+      <v-icon color="msu accent-green">fa-home</v-icon>
       <v-toolbar-title class="text-h5 pl-5 hidden-sm-and-down">
         {{ $appStrings('appName') }}
       </v-toolbar-title>
@@ -137,5 +137,8 @@ export default {
   }
   .v-list--nav .v-list-item__icon:first-child {
     margin-right: 10px;
+  }
+  .v-toolbar__title.text-h5 {
+    font-weight: 500;
   }
 </style>

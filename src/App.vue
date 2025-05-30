@@ -30,7 +30,7 @@ export default {
 <style lang="scss">
   @import '@/assets/sass/main.scss';
   #nprogress .bar {
-    background: #f08521;
+    background: #FDB515;
 
     position: fixed;
     z-index: 9999;

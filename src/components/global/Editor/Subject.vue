@@ -215,7 +215,7 @@
                       label="Email"
                       type="text"
                       :autocomplete="(autofill) ? '' : 'nope'">
-                    </v-text-field>
+                  </v-text-field>
                   </ValidationProvider>
                 </v-col>
                 <FeathersVuexFind service="participantCategories" ref="participant_categories" :query="{ active: 1, hidden: 0, $sort: { sortOrder: 1 } }">
@@ -307,6 +307,7 @@
                     color="msu">
                   </v-switch>
                 </v-col>
+                <!---
                 <v-col class="py-2" cols="12" md="5">
                   <v-autocomplete
                     :id="`${clone.id || clone.__id}-${prependField}paymentGroup`"
@@ -332,6 +333,7 @@
                     </template>
                   </v-autocomplete>
                 </v-col>
+                --->
               </v-row>
             </v-tab-item>
             <v-tab-item class="px-5">
