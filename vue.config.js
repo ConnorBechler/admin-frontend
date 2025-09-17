@@ -29,6 +29,29 @@ module.exports = {
       config.module.rule('scss').oneOf(match).use('sass-loader')
         .tap(opt => Object.assign(opt, { prependData: '@import \'~@/assets/sass/variables.scss\';' }));
     });
+    config.plugin('banner')
+      .use(webpack.BannerPlugin, [{
+        banner: `/*!
+ * © 2025, Michigan State University
+ * MI Diaries Research Framework was developed by the Department of 
+ * Linguistics, Languages, and Cultures at Michigan State University.
+ * All rights reserved.
+ *
+ * Permission is granted to reproduce, distribute, and adapt this material for educational and 
+ * non-commercial purposes, provided proper attribution is given to the Department of
+ * Linguistics, Languages, and Cultures at Michigan State University. No part of this publication
+ * may be sold, used for commercial gain, or incorporated into commercial products or services
+ * without prior written permission.
+ *
+ * For inquiries regarding use or licensing, please contact:
+ * Department of Linguistics, Languages, and Cultures at Michigan State University
+ * Michigan State University
+ * Dr. Betsy Sneller - Assistant Professor Linguistics
+ * Email: sneller7@msu.edu
+ */`,
+        raw: true,
+        entryOnly: false,
+      }]);
   },
   devServer: {
     proxy: {
