@@ -3,7 +3,13 @@
     TOOD: move top nav buttons and user/login button to hambugerstack for mobile
   --->
   <v-app-bar app clipped-left class="msu">
-    <v-btn text to="/admin" :ripple="false" class="appname white--text">
+    <v-btn v-if="isElevated" text to="/admin" :ripple="false" class="appname white--text">
+        <v-icon>fa-home</v-icon>
+        <v-toolbar-title class="text-h5 pl-5 hidden-sm-and-down">
+          {{ $appStrings('appName') }}
+        </v-toolbar-title>
+    </v-btn>
+    <v-btn v-else text to="/my" :ripple="false" class="appname white--text">
       <v-icon>fa-home</v-icon>
       <v-toolbar-title class="text-h5 pl-5 hidden-sm-and-down">
         {{ $appStrings('appName') }}
@@ -29,13 +35,33 @@
 
           <v-list nav class="msu light white--text">
             <v-list-item-group>
-              <v-list-item v-if="isAuthenticated && (isElevated)" :to="{name: (isAdmin || isRA) ? 'adminProfile' : 'profile' }">
+              <v-list-item v-if="isAuthenticated" :to="{name: (isAdmin || isRA) ? 'adminProfile' : 'basicProfile' }">
                 <v-list-item-icon>
                   <v-icon class="white--text" size="18">fa-user</v-icon>
                 </v-list-item-icon>
                 <v-list-item-content>
                   <v-list-item-title class="white--text">
                     Profile
+                  </v-list-item-title>
+                </v-list-item-content>
+              </v-list-item>
+              <v-list-item v-if="$route.path.includes('/my') && isElevated" to="/admin">
+                <v-list-item-icon>
+                  <v-icon class="white--text" size="18">fa-solid fa-toggle-off</v-icon>
+                </v-list-item-icon>
+                <v-list-item-content>
+                  <v-list-item-title class="white--text">
+                    Admin Off
+                  </v-list-item-title>
+                </v-list-item-content>
+              </v-list-item>
+              <v-list-item v-if="$route.path.includes('/admin')" to="/my">
+                <v-list-item-icon>
+                  <v-icon class="white--text" size="18">fa-solid fa-toggle-on</v-icon>
+                </v-list-item-icon>
+                <v-list-item-content>
+                  <v-list-item-title class="white--text">
+                    Admin On
                   </v-list-item-title>
                 </v-list-item-content>
               </v-list-item>

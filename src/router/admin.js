@@ -210,4 +210,71 @@ export default [
       },
     ],
   },
+  {
+    path: '/my',
+    alias: ['/base'],
+    component: LayoutBlank,
+    meta: {
+      authRequired: true,
+      layout: {
+        component: 'LayoutBasic',
+      },
+      sidebar: {
+        component: 'DrawerBasic',
+        visible: true,
+      },
+    },
+    children: [
+      {
+        path: '',
+        name: 'basicHome',
+        component: () => import(/* webpackChunkName: "basicHome" */ '@/router/views/Home.vue'),
+        meta: { sidebar: { visible: true } },
+      },
+      {
+        path: 'diaries',
+        component: LayoutBlank,
+        name: 'basicDiaries',
+        children: [
+          {
+            path: '',
+            name: 'basicDiariesList',
+            component: () => import(/* webpackChunkName: "basicDiariesList" */ '@/router/views/basic/Diaries/List.vue'),
+          },
+          {
+            path: 'upload',
+            name: 'basicDiaryUpload',
+            component: () => import(/* webpackChunkName: "basicDiariesCreate" */ '@/router/views/admin/Diaries/Create.vue'),
+          },
+          {
+            path: ':id',
+            name: 'basicDiaryDetails',
+            component: () => import(/* webpackChunkName: "basicDiariesDetail" */ '@/router/views/admin/Diaries/Detail.vue'),
+            props: true,
+          },
+        ],
+      },
+      {
+        path: 'profile',
+        name: 'basicProfile',
+        component: () => import(/* webpackChunkName: "basicProfile" */ '@/router/views/UserProfile.vue'),
+        meta: {
+          sidebar: {
+            visible: false,
+          },
+        },
+      },
+      /* {
+        path: 'dictionary',
+        component: LayoutBlank,
+        children: [
+          {
+            path: '',
+            name: 'adminDictionaryWordsList',
+            component: () => import(/ *webpackChunkName: "adminDictionaryWordsList"* / '@/router/views/admin/DictionaryWords/List.vue'),
+          },
+        ],
+      }, */
+    ],
+  },
 ];

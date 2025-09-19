@@ -488,7 +488,7 @@ export default {
             },
             { root: true });
           // Redirect to the originally requested page, or to the home page
-          this.$router.push(this.$route.query.redirectFrom || this.$route.params.redirectFrom || { name: (this.isElevated) ? 'adminHome' : 'home' });
+          this.$router.push(this.$route.query.redirectFrom || this.$route.params.redirectFrom || { name: (this.isElevated) ? 'adminHome' : 'basicHome' });
         })
         .catch((error) => {
           NProgress.done();
@@ -536,7 +536,7 @@ export default {
               })
                 .then(() => {
                   NProgress.inc();
-                  this.$router.push({ name: (this.isElevated) ? 'adminHome' : 'home' });
+                  this.$router.push({ name: (this.isElevated) ? 'adminHome' : 'basicHome' });
                 });
             });
         })
@@ -691,7 +691,7 @@ export default {
   },
   beforeResolve(to, from, next) {
     if (this.store.getters['auth/isAuthenticated']) {
-      next(this.$route.query.redirectFrom || this.$route.params.redirectFrom || { name: (this.store.getters['auth/isElevated']) ? 'adminHome' : 'home' });
+      next(this.$route.query.redirectFrom || this.$route.params.redirectFrom || { name: (this.store.getters['auth/isElevated']) ? 'adminHome' : 'basicHome' });
     } else {
       next();
     }
