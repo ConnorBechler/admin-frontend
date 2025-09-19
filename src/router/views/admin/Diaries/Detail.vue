@@ -1,12 +1,12 @@
 <template>
-  <v-container fluid v-if="isAuthenticated && currentDiary">
+  <v-container fluid v-if="(isAuthenticated && currentDiary) && (isElevated || hasMatchingEmail(currentDiary.profile.subject.email) )">
     <v-row justify="center" >
       <v-col cols="12">
         <v-card>
           <v-card-title primary-title class="msu dark-grey text-center white--text">
             <h3>Diary Details</h3>
             <v-spacer></v-spacer>
-            <v-dialog
+            <v-dialog v-if="isElevated"
               v-model="showProfileEditor"
               width="50%"
               :fullscreen="$vuetify.breakpoint.xs"
@@ -346,10 +346,11 @@
                   @change="importNewTranscript(recording[0].id)"
                   :key="`${currentDiary.id}-${fileInputKey}`"
                 >
+                <span v-if="isElevated">
                 <v-btn v-if="recording.length" class="white black--text" :small="$vuetify.breakpoint.smAndDown" @click.stop="requestNewTranscript(recording[0].id)" :loading="transcriptIsRunning">
                   <v-icon small class="mr-2">fa-cloud-download-alt</v-icon>
                   Regenerate
-                </v-btn>
+                </v-btn></span>
               </v-card-title>
               <v-card-text class="text-subtitle-1">
                 <FeathersVuexFind v-if="recording.length" service="transcriptions" :query="{ documentId: recording[0].id, $sort: { revision: -1 } }">
@@ -455,7 +456,7 @@
                           <v-row class="mb-5">
                             <v-col cols="12">
                               Actions:
-                              <v-btn
+                              <v-btn v-if="hasRole('admin, ra, ga')"
                                 small
                                 class="white--text controls-row float-right"
                                 @click.stop="transcript.metadata.locked ? null : removeTranscript(transcript)"
@@ -501,8 +502,7 @@
                                 </template>
                                 <template v-slot:item.text="{ item }">
                                   <span v-if="item.type === 'WORD'">
-                                    Fix, or
-                                    <span @click="addToDictionary(item.target)" class="text-decoration-underline" style="cursor: pointer;">Add to Dictionary</span>
+                                    Fix<span v-if="hasRole('admin, ra, ga')">, or <span @click="addToDictionary(item.target)" class="text-decoration-underline" style="cursor: pointer;">Add to Dictionary</span></span>
                                   </span>
                                   <span v-if="item.type === 'SYNTAX' || item.type === 'OVERLAP'">
                                     Fix
@@ -696,7 +696,7 @@
                                 </v-col>
                                 <v-col cols="1">
                                   <v-icon
-                                    v-if="hasRole('admin, ra, ga')"
+                                    v-if="hasRole('admin, ra, ga, user')"
                                     :disabled="transcript.metadata.locked"
                                     :readonly="transcript.metadata.locked"
                                     class="mr-3"
@@ -706,7 +706,7 @@
                                     fa-plus-circle
                                   </v-icon>
                                   <v-icon
-                                    v-if="hasRole('admin, ra, ga')"
+                                    v-if="hasRole('admin, ra, ga, user')"
                                     :disabled="transcript.metadata.locked"
                                     :readonly="transcript.metadata.locked"
                                     class="mr-3"
@@ -1470,7 +1470,7 @@ export default {
     id: {
       async handler(val) {
         if (!val) {
-          this.$router.push({ name: 'adminDiariesList' });
+          this.$router.push({ name: (this.isElevated) ? 'adminDiariesList' : 'basicDiariesList'  });
         }
         const { Diary } = this.$FeathersVuex.api;
         const diaryAlreadyLoaded = Diary.getFromStore(val);
@@ -1501,7 +1501,7 @@ export default {
                   icon: 'fa-exclamation',
                 },
                 { root: true });
-              this.$router.push({ name: 'adminDiariesList' });
+              this.$router.push({ name: (this.isElevated) ? 'adminDiariesList' : 'basicDiariesList' });
             });
         }
       },
@@ -1511,7 +1511,7 @@ export default {
   created() {
     // TODO: add checks for deleted, not this user, etc
     if (!this.id) {
-      this.$router.push({ name: 'adminDiariesList' });
+      this.$router.push({ name: (this.isElevated) ? 'adminDiariesList' : 'basicDiariesList'  });
     }
   },
 };

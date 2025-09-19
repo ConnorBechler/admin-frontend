@@ -44,6 +44,7 @@ export default makeAuthPlugin({
     hasRole: (state, getters) => rolesToCheck => getters.user ? rolesToCheck.split(',').map(role => role.trim().toLowerCase()).some(needs => getters.user.roles.some(role => role.toLowerCase() === needs)) : false,
     isRA: (state, getters) => getters.hasRole('ra,ga'),
     isElevated: (state, getters) => (getters.isRA || getters.hasRole('transcriptManager') || getters.hasRole('researchManager') || getters.isAdmin),
+    hasMatchingEmail: (state, getters) => Email => getters.user ? (Email === getters.user.email) : true,
   },
   actions: {
     /* eslint-disable-next-line */
