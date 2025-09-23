@@ -22,6 +22,16 @@
                 </v-list-item-content>
               </v-list-item>
               <v-divider></v-divider>
+              <v-list-item :to="{ name: 'adminReportsDiaryFilterer' }">
+                <v-list-item-icon class="pt-4">
+                  <v-icon color="msu">fa-filter</v-icon>
+                </v-list-item-icon>
+                <v-list-item-content>
+                  <v-list-item-title>Diary Filterer</v-list-item-title>
+                  <v-list-item-subtitle>Filter Diaries through said filter to retrieve filtered Diary list</v-list-item-subtitle>
+                </v-list-item-content>
+              </v-list-item>
+              <v-divider></v-divider>
               <v-list-item :to="{ name: 'adminReportsContentSearch' }">
                 <v-list-item-icon class="pt-4">
                   <v-icon color="msu">fa-search</v-icon>

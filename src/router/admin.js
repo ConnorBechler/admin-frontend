@@ -201,6 +201,12 @@ export default [
             props: true,
           },
           {
+            path: 'diary-filterer',
+            name: 'adminReportsDiaryFilterer',
+            component: () => import(/* webpackChunkName: "adminReportsDiaryFilterer" */ '@/router/views/admin/Reports/DiaryFilterer.vue'),
+            props: true,
+          },
+          {
             path: 'content-search',
             name: 'adminReportsContentSearch',
             component: () => import(/* webpackChunkName: "adminReportsContentSearch" */ '@/router/views/admin/Reports/ContentSearch.vue'),
