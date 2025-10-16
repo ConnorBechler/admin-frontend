@@ -15,12 +15,14 @@
                   <span class="text-h6">Privacy Policy</span><br>
                   Your data will be stored on our secure server to which only team members have access. We give all participants a subject ID number, to keep personal identifying information separate from your audio files. Personal identifying information, such as your name and email address, will be kept in a distinct password-protected record separate from your data.
                 </p>
+                <!--
                 <p class="pa-3">
                   (( add any University-/Project-specific or required text in here as well to utilize for App Store submissions for privacy/contact page))
                 </p>
+                -->
                 <p class="pa-3">
                   <span class="text-h6">Support Information</span><br>
-                  (( add any contact info here, including name and email address to contact with support/issues ))
+                  Please contact Robin Dodsworth (rmdodswo@ncsu.edu) if you require support or to report any issues while using the app.
                 </p>
                 <p class="pa-3">
                   If you wish to delete your profile and remove your information from the app, you may do so on the main page by long pressing on your profile and choosing to delete.

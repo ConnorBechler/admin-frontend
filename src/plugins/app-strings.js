@@ -1,12 +1,12 @@
 import Vue from 'vue';
 // lazy way to have app-wide string constants accessible
 const appStrings = {
-  appName: 'APP NAME',
-  appUrl: 'https://your-actual-url-here',
+  appName: 'NCLLP',
+  appUrl: 'https://ncllp.apps.sociolinguistics.msu.edu',
   // this must match FORM_SECRET in backend .env
   formSecret: 'GenerateARealFormSecretAfterInstall',
   // for your sanity, make this match SUBJECT_PREFIX in backend .env
-  subjectPrefix: 'VAN',
+  subjectPrefix: 'LLP',
 };
 
 appStrings.install = () => {

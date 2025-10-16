@@ -48,24 +48,24 @@ export default [
               roleRequired: 'admin',
             },
           },
-          {
+          /* {
             path: 'payPeriods',
             name: 'adminDiaryPayPeriodsList',
-            component: () => import(/* webpackChunkName: "adminDiaryPayPeriodsList" */ '@/router/views/admin/DiaryPayPeriods/List.vue'),
+            component: () => import(/* webpackChunkName: "adminDiaryPayPeriodsList" * / '@/router/views/admin/DiaryPayPeriods/List.vue'),
           },
           {
             path: 'paymentGroups',
             name: 'adminPaymentGroupsList',
-            component: () => import(/* webpackChunkName: "adminPaymentGroupsList" */ '@/router/views/admin/PaymentGroups/List.vue'),
+            component: () => import(/* webpackChunkName: "adminPaymentGroupsList" * / '@/router/views/admin/PaymentGroups/List.vue'),
           },
           {
             path: 'participantCategories',
             name: 'adminParticipantCategoriesList',
-            component: () => import(/* webpackChunkName: "adminParticipantCategoriesList" */ '@/router/views/admin/ParticipantCategories/List.vue'),
-          },
+            component: () => import(/* webpackChunkName: "adminParticipantCategoriesList" * / '@/router/views/admin/ParticipantCategories/List.vue'),
+          }, */
         ],
       },
-      {
+      /* {
         path: 'research',
         component: LayoutBlank,
         children: [
@@ -79,7 +79,7 @@ export default [
               {
                 path: '',
                 name: 'adminResearchProcessingJobsList',
-                component: () => import(/* webpackChunkName: "adminResearchProcessingJobsList" */ '@/router/views/admin/ProcessingJobs/List.vue'),
+                component: () => import(/* webpackChunkName: "adminResearchProcessingJobsList" * / '@/router/views/admin/ProcessingJobs/List.vue'),
               },
             ],
           },
@@ -93,13 +93,13 @@ export default [
               {
                 path: '',
                 name: 'adminResearchRemoteWorkersList',
-                component: () => import(/* webpackChunkName: "adminResearchRemoteWorkersList" */ '@/router/views/admin/RemoteWorkers/List.vue'),
+                component: () => import(/* webpackChunkName: "adminResearchRemoteWorkersList" * / '@/router/views/admin/RemoteWorkers/List.vue'),
               },
             ],
           },
         ],
-      },
-      {
+      }, */
+      /* {
         path: 'transcriptions',
         component: LayoutBlank,
         meta: {
@@ -109,7 +109,7 @@ export default [
           {
             path: '',
             name: 'adminTranscriptionManagerList',
-            component: () => import(/* webpackChunkName: "adminTranscriptionManagerList" */ '@/router/views/admin/TranscriptionManager/List.vue'),
+            component: () => import(/* webpackChunkName: "adminTranscriptionManagerList" * / '@/router/views/admin/TranscriptionManager/List.vue'),
           },
         ],
       },
@@ -120,10 +120,10 @@ export default [
           {
             path: '',
             name: 'adminDictionaryWordsList',
-            component: () => import(/* webpackChunkName: "adminDictionaryWordsList" */ '@/router/views/admin/DictionaryWords/List.vue'),
+            component: () => import(/ * webpackChunkName: "adminDictionaryWordsList" * / '@/router/views/admin/DictionaryWords/List.vue'),
           },
         ],
-      },
+      }, */
       {
         path: 'diaries',
         component: LayoutBlank,
@@ -185,32 +185,32 @@ export default [
           },
         ],
       },
-      {
+      /* {
         path: 'reports',
         component: LayoutBlank,
         children: [
           {
             path: '',
             name: 'adminReportsList',
-            component: () => import(/* webpackChunkName: "adminReportsList" */ '@/router/views/admin/Reports/List.vue'),
+            component: () => import(/* webpackChunkName: "adminReportsList" * / '@/router/views/admin/Reports/List.vue'),
           },
           {
             path: 'duration-summaries',
             name: 'adminReportsDurationSummary',
-            component: () => import(/* webpackChunkName: "adminReportsDurationSummary" */ '@/router/views/admin/Reports/DurationSummary.vue'),
+            component: () => import(/* webpackChunkName: "adminReportsDurationSummary" * / '@/router/views/admin/Reports/DurationSummary.vue'),
             props: true,
           },
           {
             path: 'content-search',
             name: 'adminReportsContentSearch',
-            component: () => import(/* webpackChunkName: "adminReportsContentSearch" */ '@/router/views/admin/Reports/ContentSearch.vue'),
+            component: () => import(/* webpackChunkName: "adminReportsContentSearch" * / '@/router/views/admin/Reports/ContentSearch.vue'),
             props: true,
           },
         ],
-      },
+      }, */
     ],
   },
-  {
+  /* {
     path: '/my',
     alias: ['/base'],
     component: LayoutBlank,
@@ -228,7 +228,7 @@ export default [
       {
         path: '',
         name: 'basicHome',
-        component: () => import(/* webpackChunkName: "basicHome" */ '@/router/views/Home.vue'),
+        component: () => import(/* webpackChunkName: "basicHome" * / '@/router/views/Home.vue'),
         meta: { sidebar: { visible: true } },
       },
       {
@@ -239,17 +239,17 @@ export default [
           {
             path: '',
             name: 'basicDiariesList',
-            component: () => import(/* webpackChunkName: "basicDiariesList" */ '@/router/views/basic/Diaries/List.vue'),
+            component: () => import(/* webpackChunkName: "basicDiariesList" * / '@/router/views/basic/Diaries/List.vue'),
           },
           {
             path: 'upload',
             name: 'basicDiaryUpload',
-            component: () => import(/* webpackChunkName: "basicDiariesCreate" */ '@/router/views/admin/Diaries/Create.vue'),
+            component: () => import(/* webpackChunkName: "basicDiariesCreate" * / '@/router/views/admin/Diaries/Create.vue'),
           },
           {
             path: ':id',
             name: 'basicDiaryDetails',
-            component: () => import(/* webpackChunkName: "basicDiariesDetail" */ '@/router/views/admin/Diaries/Detail.vue'),
+            component: () => import(/* webpackChunkName: "basicDiariesDetail" * / '@/router/views/admin/Diaries/Detail.vue'),
             props: true,
           },
         ],
@@ -257,7 +257,7 @@ export default [
       {
         path: 'profile',
         name: 'basicProfile',
-        component: () => import(/* webpackChunkName: "basicProfile" */ '@/router/views/UserProfile.vue'),
+        component: () => import(/* webpackChunkName: "basicProfile" * / '@/router/views/UserProfile.vue'),
         meta: {
           sidebar: {
             visible: false,
@@ -271,10 +271,10 @@ export default [
           {
             path: '',
             name: 'adminDictionaryWordsList',
-            component: () => import(/ *webpackChunkName: "adminDictionaryWordsList"* / '@/router/views/admin/DictionaryWords/List.vue'),
+            component: () => import(/* webpackChunkName: "adminDictionaryWordsList"* / '@/router/views/admin/DictionaryWords/List.vue'),
           },
         ],
-      }, */
+      },
     ],
-  },
+  }, */
 ];
