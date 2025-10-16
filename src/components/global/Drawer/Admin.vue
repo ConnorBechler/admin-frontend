@@ -22,12 +22,12 @@ export default {
     items() {
       return [
         {
-          text: 'Quick Add: Diary',
+          text: 'Quick Add: Recording',
           icon: 'fa-plus-circle',
           route: 'adminDiaryUpload',
         },
         {
-          text: 'Diaries',
+          text: 'Recordings',
           icon: 'fa-book',
           route: 'adminDiariesList',
         },
@@ -36,7 +36,7 @@ export default {
           icon: 'fa-users',
           route: 'adminSubjectsList',
         },
-        {
+        /* {
           text: 'Dictionary',
           icon: 'fa-quote-right',
           route: 'adminDictionaryWordsList',
@@ -76,13 +76,13 @@ export default {
               roles: 'researchManager',
             },
           ],
-        },
+        }, */
         {
           text: 'Manage',
           icon: 'fa-cogs',
           path: '/admin/manage',
           children: [
-            {
+            /* {
               text: 'Participant Categories',
               icon: 'fa-people-group',
               route: 'adminParticipantCategoriesList',
@@ -96,7 +96,7 @@ export default {
               text: 'Payment Periods',
               icon: 'far fa-calendar-alt',
               route: 'adminDiaryPayPeriodsList',
-            },
+            }, */
             {
               text: 'Users',
               icon: 'fa-users',

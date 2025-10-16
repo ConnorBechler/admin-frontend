@@ -51,15 +51,16 @@
         <v-col cols="12" lg="10">
           <v-data-table
             :headers="[
-              {text: 'S', value: 'metadata.editingStatus', width: '10%', align: 'center', sortable: false},
-              {text: 'SID', value: 'subjectId', width: '20%', sortable: false},
-              {text: 'Pub', value: 'permissionShare', width: '10%', align: 'center', sortable: false},
-              {text: 'Feat', value: 'metadata.interesting', width: '10%', align: 'center', sortable: false},
-              {text: 'Category', value: 'participantCategory', width: '10%', sortable: false},
-              {text: 'Diary #', value: 'dateCode', width: '25%', align: 'end', sortable: false},
-              {text: 'Duration', value: 'metadata.duration', width: '10%', align: 'start', sortable: false},
-              {text: '', value: 'actions', width: '10%', sortable: false},
-              {text: '', value: 'hidden', width: '5%', align: ($vuetify.breakpoint.smAndDown || !showHiddenDiaries) ? ' d-none' : '', sortable: false},
+            //{text: 'S', value: 'metadata.editingStatus', width: '10%', align: 'center', sortable: false},
+            {text: 'SID', value: 'subjectId', width: '20%', sortable: true},
+            /* {text: 'Pub', value: 'permissionShare', width: '10%', align: 'center', sortable: false},
+            {text: 'Feat', value: 'metadata.interesting', width: '10%', align: 'center', sortable: false},
+            {text: 'Category', value: 'participantCategory', width: '10%', sortable: false}, */
+            {text: 'Diary #', value: 'dateCode', width: '20%', align: 'start', sortable: true},
+            {text: 'Duration', value: 'metadata.duration', width: '10%', align: 'start', sortable: false},
+            {text: '',value: 'audio', width: '40%',align:'end',sortable: false},
+            //{text: '', value: 'actions', width: '5%', sortable: false},
+            //{text: '', value: 'hidden', width: '5%', align: ($vuetify.breakpoint.smAndDown || !showHiddenDiaries) ? ' d-none' : '', sortable: false},
             ]"
             :items="diaries"
             :server-items-length="serverItemsLength"
@@ -81,7 +82,7 @@
             <template v-slot:top>
               <v-toolbar flat class="msu dark-grey text-center white--text">
                 <v-toolbar-title>
-                  <h3>Recent Diaries</h3>
+                  <h3>Recent Recordings</h3>
                 </v-toolbar-title>
                 <v-text-field
                   v-model="searchString"
@@ -93,14 +94,14 @@
                   class="mt-7 mx-4"
                 ></v-text-field>
                 <v-spacer></v-spacer>
-                <v-icon class="white--text">
+                <!--<v-icon class="white--text">
                   {{ showHiddenDiariesIcon }}
                 </v-icon>
                 <v-switch
                   v-model="showHiddenDiaries"
                   color="msu hover-1"
                   class="pt-5 mx-5">
-                </v-switch>
+                </v-switch>-->
               </v-toolbar>
             </template>
             <template v-slot:item.subjectId="{ item }">
@@ -120,19 +121,19 @@
               </FeathersVuexCount>
               {{ item.dateCode }}
             </template>
-            <template v-slot:item.permissionShare="{ item }">
+            <!--<template v-slot:item.permissionShare="{ item }">
               {{ (item.permissionShare) ? 'Y' : 'N' }}
             </template>
             <template v-slot:item.participantCategory="{ item }">
               <span v-if="item.profile.subjectId">
-                <!--- temporary workaround for list not updating after dialog editor adds sid --->
+                <! --- temporary workaround for list not updating after dialog editor adds sid --- >
                 {{ item.participantCategory !== '' ? item.participantCategory : $FeathersVuex.api.Subject.getFromStore(item.profile.subjectId).metadata.participant_category }}
               </span>
-            </template>
+            </template>-->
             <template v-slot:item.metadata.duration="{ item }">
               {{ toSexagesimal((item.metadata.duration) ? item.metadata.duration : 0, 'seconds') }}
             </template>
-            <template v-slot:item.hidden="{ item }">
+            <!--<template v-slot:item.hidden="{ item }">
               <v-icon small class="black--text">
                 {{ (item.hidden) ? 'fa-eye-slash' : '' }}
               </v-icon>
@@ -168,16 +169,72 @@
                   fa-check-double
                 </v-icon>
               </span>
+            </template>-->
+            <template v-slot:item.audio="{ item }">
+              <span v-if="hasRole('admin, ra, ga')">
+                <FeathersVuexFind v-slot="{ items: audRec, isFindPending: recordingIsLoading }" service="documents" :params="{ query: {parentId : item.id, $or : [ { fileext: 'mp4' }, { fileext: 'm4a' }, { fileext: 'mp3' }, { fileext: 'wav' }, { fileext: 'webm' }, { fileext: 'ogg' }, { fileext: 'flac' }, ],} }">
+                <span v-if="recordingIsLoading">Audio loading...</span>
+                <span v-else>
+                  <section v-if="audRec.length > 0">
+                    <!--<div>
+                    <audio
+                      controls
+                      ref="player"
+                      :key="audRec[0].id"
+                      preload="metadata"
+                      @playing="updatePlayerStatus('playing')"
+                      @pause="updatePlayerStatus('pause')"
+                      @ended="updatePlayerStatus('ended')"
+                      @timeupdate="updatePlayerTime"
+                      style="width:100%;" >
+                      <source
+                        :src="`/audio/${audRec[0].id}.mp3`"
+                        type="audio/mp3">
+                    </audio>
+                    </div>-->
+                    <v-select
+                        :id="`${item.id}-audioDownloadOptions`"
+                        v-model="selectedAudioDownloadOption"
+                        name="selectedAudioDownloadOption"
+                        label="Download audio as..."
+                        :return-object="true"
+                        :items="audioDownloadOptions(audRec[0])"
+                        @click.native.stop
+                        >
+                        <template v-slot:append-outer>
+                          <v-btn
+                            :id="`${item.id}-audioDownloadBtn`"
+                            small
+                            class="controls-row mr-2"
+                            style="width: 10em"
+                            @click.native.stop="selectedAudioDownloadOption.type === 'original' ? downloader('/api/download/' + audRec[0].id, item.id) : convertAudio(selectedAudioDownloadOption)"
+                            :loading="downloadBtnSettings[item.id]?.isDownloading || downloadBtnDefaults.disabled"
+                            :disabled="!selectedAudioDownloadOption.type
+                              || downloadBtnSettings[item.id]?.isDownloading
+                              || downloadBtnSettings[item.id]?.disabled
+                              || downloadBtnDefaults.disabled"
+                            :color="downloadBtnSettings[item.id]?.color || downloadBtnDefaults.color">
+                            <v-icon v-if="downloadBtnSettings[item.id]?.icon" small v-text="downloadBtnSettings[item.id]?.icon"></v-icon>
+                            <span v-else>
+                              {{ downloadBtnSettings[item.id]?.text || downloadBtnDefaults.text}}
+                            </span>
+                          </v-btn>
+                        </template>
+                    </v-select>
+                  </section>
+                </span>
+                </FeathersVuexFind>
+              </span>
             </template>
-            <template v-slot:item.actions="{ item }">
+            <!--<template v-slot:item.actions="{ item }">
               <v-btn
-                v-if="hasRole('admin, ra, ga')"
+                v-if="hasRole('admin, ra, ga') && item.metadata.duration > 0"
                 small
                 color="msu white--text"
                 @click="showDiaryDetail(item)">
                 View
               </v-btn>
-            </template>
+            </template>-->
             <template v-slot:footer.prepend>
               <v-btn
                 small
@@ -204,16 +261,18 @@ import { makeFindMixin } from 'feathers-vuex';
 import { authComputed, appComputed } from '@/store/helpers';
 import feathersClient from '@/plugins/feathers-client';
 import formatters from '@/mixins/formatters';
+import axios from 'axios';
+import qs from 'qs';
 
 
 export default {
   page() {
     return {
-      title: `Admin | Diaries | ${this.$appStrings('appName')}`,
+      title: `Admin | Recordings | ${this.$appStrings('appName')}`,
       meta: [
         {
           name: 'description',
-          content: 'Admin - Diary List',
+          content: 'Admin - Recording List',
         },
       ],
     };
@@ -237,18 +296,27 @@ export default {
         page: 1,
       },
       isProcessing: false,
+      isCompleted: false,
+      isDownloading: false,
+      playerStatus: {
+        currentTime: 0,
+        playing: false,
+        paused: false,
+      },
+      selectedAudioDownloadOption: {},
+      selectedTranscriptDownloadOption: {},
+      downloadBtnSettings: {},
+      downloadBtnDefaults: {
+        text: 'Download',
+        color: 'msu light-grey',
+        icon: 'fa-cloud-download-alt',
+        disabled: false,
+      },
     };
   },
   computed: {
     ...authComputed,
     ...appComputed,
-    // diariesParams() {
-    //   const query = { active: 1, hidden: 0, $sort: { createdAt: -1 } };
-    //   if (this.showHiddenDiaries) {
-    //     delete query.hidden;
-    //   }
-    //   return { query };
-    // },
     showHiddenDiariesIcon() {
       return (this.showHiddenDiaries) ? 'fa-eye' : 'fa-eye-slash';
     },
@@ -288,6 +356,98 @@ export default {
         .finally(() => {
           this.isProcessing = false;
         })
+    },
+    audioDownloadOptions(recording) {
+      const ret = [];
+      ret.push({
+        text: 'Original (' + recording.fileext.toUpperCase() + ')',
+        type: 'original',
+      });
+      ret.push({
+        id: recording.id,
+        text: 'WAV',
+        type: 'wav',
+      });
+      ret.push({
+        id: recording.id,
+        text: 'MP3',
+        type: 'mp3',
+      });
+      return ret;
+    },
+    convertAudio({id, type, raw = false, redact = false, transcriptionId = null}) {
+      const options = {};
+      options.to = type;
+      options.channels = 1;
+      options.redact = redact;
+      options.raw = raw;
+
+      if (options.redact && transcriptionId) {
+        options.transcriptionId = transcriptionId;
+      }
+
+      this.downloader('/api/audio/' + id, this.id, options);
+    },
+    downloader(uri, sourceId, options) {
+
+      this.updateDownloadBtnSettings(sourceId, 'isCompleted', false);
+      this.updateDownloadBtnSettings(sourceId, 'isDownloading', true);
+      this.updateDownloadBtnSettings(sourceId, 'error', '');
+      
+      axios.get(uri, {
+        params: options,
+        paramsSerializer: params => {
+          return qs.stringify(params)
+        },
+        headers: {
+          Authorization: this.$store.state.auth.accessToken,
+          // block cache as location doesn't change, but content can
+          'Cache-Control': 'no-cache',
+          'Pragma': 'no-cache',
+          'Expires': '0',
+        },
+        responseType: 'arraybuffer',
+      })
+      .then((resp) => {
+        this.updateDownloadBtnSettings(sourceId, 'isDownloading', false);
+        this.updateDownloadBtnSettings(sourceId, 'disabled', true);
+        this.updateDownloadBtnSettings(sourceId, 'text', '');
+        this.updateDownloadBtnSettings(sourceId, 'icon', 'fa-check-circle');
+        var blob = new Blob([resp.data],{type:resp.headers['content-type']});
+        var link = document.createElement('a');
+        link.href = window.URL.createObjectURL(blob);
+        link.target = "_blank"
+        link.download = resp.headers['x-filename'];
+        link.click();
+        setTimeout(() => {
+          this.updateDownloadBtnSettings(sourceId, 'text', 'Download');
+          this.updateDownloadBtnSettings(sourceId, 'icon', '');
+          this.updateDownloadBtnSettings(sourceId, 'disabled', false);
+          this.updateDownloadBtnSettings(sourceId, 'isCompleted', true);
+          Promise.resolve(true);
+        }, 2000);
+      })
+      .catch((err) => {
+        console.log(err)
+        const errorData = err.response.data instanceof ArrayBuffer
+          ? JSON.parse(new TextDecoder('utf-8').decode(err.response.data))
+          : err.response.data
+        this.updateDownloadBtnSettings(sourceId, 'error', { color: 'red', message: errorData.message });
+        this.updateDownloadBtnSettings(sourceId, 'isDownloading', false);
+        this.updateDownloadBtnSettings(sourceId, 'disabled', false);
+        this.updateDownloadBtnSettings(sourceId, 'text', '');
+        this.updateDownloadBtnSettings(sourceId, 'icon', 'fa-exclamation-circle');
+        this.updateDownloadBtnSettings(sourceId, 'color', 'msu accent-orange');
+        setTimeout(() => {
+          this.updateDownloadBtnSettings(sourceId, 'text', 'Download');
+          this.updateDownloadBtnSettings(sourceId, 'icon', '');
+          this.updateDownloadBtnSettings(sourceId, 'color', '');
+          Promise.resolve(true);
+        }, 3000);
+      })
+    },
+    updateDownloadBtnSettings(sourceId, key, value) {
+      this.$set(this.downloadBtnSettings, sourceId, { ...this.downloadBtnSettings[sourceId], [key]: value });
     },
     showDiaryDetail(obj) {
       let routeData = this.$router.resolve({ name: 'adminDiaryDetails', params: { id: obj.id } });
