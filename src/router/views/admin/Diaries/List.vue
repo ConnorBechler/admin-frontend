@@ -50,13 +50,14 @@
       <v-row justify="center" align="center" class="available-diaries">
         <v-col cols="12" lg="10">
           <v-data-table
+            v-model="selected"
             :headers="[
             //{text: 'S', value: 'metadata.editingStatus', width: '10%', align: 'center', sortable: false},
-            {text: 'SID', value: 'subjectId', width: '20%', sortable: true},
+            {text: 'SID', value: 'subjectId', width: '20%', sortable: false},
             /* {text: 'Pub', value: 'permissionShare', width: '10%', align: 'center', sortable: false},
             {text: 'Feat', value: 'metadata.interesting', width: '10%', align: 'center', sortable: false},
             {text: 'Category', value: 'participantCategory', width: '10%', sortable: false}, */
-            {text: 'Diary #', value: 'dateCode', width: '20%', align: 'start', sortable: true},
+            {text: 'Diary #', value: 'dateCode', width: '20%', align: 'start', sortable: false},
             {text: 'Duration', value: 'metadata.duration', width: '10%', align: 'start', sortable: false},
             {text: '',value: 'audio', width: '40%',align:'end',sortable: false},
             //{text: '', value: 'actions', width: '5%', sortable: false},
@@ -73,9 +74,11 @@
             }"
             :fixed-header="true"
             :loading="isProcessing"
-            loading-text="Loading Diaries..."
+            loading-text="Loading Recordings..."
             height="70vh"
-            class="elevation-1">
+            class="elevation-1"
+            show-select
+            return-object>
             <template v-slot:progress>
               <v-progress-linear indeterminate color="msu"></v-progress-linear>
             </template>
@@ -111,14 +114,22 @@
               <span v-else>
                 <!--- temporary workaround for list not updating after dialog editor adds sid --->
                 {{ item.subjectId !== '(no SID)' ? item.subjectId : $FeathersVuex.api.Subject.getFromStore(item.profile.subjectId).shortcode }}
+                <v-icon
+                v-if="hasRole('admin, ra, ga')"
+                small
+                class="ml-3"
+                color="msu dark-grey"
+                @click="editObj(item)">
+                fa-pencil-alt
+              </v-icon>
               </span>
             </template>
             <template v-slot:item.dateCode="{ item }">
-              <FeathersVuexCount v-slot="{ total }" service="documents" :params="{ query: { parentId: item.id, $or: [ { fileext: 'jpg' }, { fileext: 'png' } ] } }">
+              <!--<FeathersVuexCount v-slot="{ total }" service="documents" :params="{ query: { parentId: item.id, $or: [ { fileext: 'jpg' }, { fileext: 'png' } ] } }">
                 <v-icon left color="msu dark-grey" v-if="total">
                   {{ (total === 1) ? 'far fa-image' : 'far fa-images' }}
                 </v-icon>
-              </FeathersVuexCount>
+              </FeathersVuexCount>-->
               {{ item.dateCode }}
             </template>
             <!--<template v-slot:item.permissionShare="{ item }">
@@ -193,47 +204,43 @@
                     </audio>
                     </div>-->
                     <v-select
-                        :id="`${item.id}-audioDownloadOptions`"
-                        v-model="selectedAudioDownloadOption"
-                        name="selectedAudioDownloadOption"
-                        label="Download audio as..."
-                        :return-object="true"
-                        :items="audioDownloadOptions(audRec[0])"
-                        @click.native.stop
-                        >
-                        <template v-slot:append-outer>
-                          <v-btn
-                            :id="`${item.id}-audioDownloadBtn`"
-                            small
-                            class="controls-row mr-2"
-                            style="width: 10em"
-                            @click.native.stop="selectedAudioDownloadOption.type === 'original' ? downloader('/api/download/' + audRec[0].id, item.id) : convertAudio(selectedAudioDownloadOption)"
-                            :loading="downloadBtnSettings[item.id]?.isDownloading || downloadBtnDefaults.disabled"
-                            :disabled="!selectedAudioDownloadOption.type
-                              || downloadBtnSettings[item.id]?.isDownloading
-                              || downloadBtnSettings[item.id]?.disabled
-                              || downloadBtnDefaults.disabled"
-                            :color="downloadBtnSettings[item.id]?.color || downloadBtnDefaults.color">
-                            <v-icon v-if="downloadBtnSettings[item.id]?.icon" small v-text="downloadBtnSettings[item.id]?.icon"></v-icon>
+                      :id="`${item.id}-audioDownloadOptions`"
+                      v-model="selectedAudioDownloadOption[item.id]"
+                      name="selectedAudioDownloadOption"
+                      label="Download audio as..."
+                      :return-object="true"
+                      :items="audioDownloadOptions(audRec[0])"
+                      @click.native.stop
+                      >
+                      <template v-slot:append-outer>
+                        <v-btn
+                          :id="`${item.id}-audioDownloadBtn`"
+                          small
+                          class="controls-row mr-2"
+                          style="width: 10em"
+                          @click.native.stop="selectedAudioDownloadOption[item.id]?.type === 'original' ? downloader('/api/download/' + audRec[0].id, item.id) : convertAudio(selectedAudioDownloadOption[item.id])"
+                          :loading="downloadBtnSettings[item.id]?.isDownloading || downloadBtnDefaults.disabled"
+                          :disabled="!selectedAudioDownloadOption[item.id]?.type
+                            || downloadBtnSettings[item.id]?.isDownloading
+                            || downloadBtnSettings[item.id]?.disabled
+                            || downloadBtnDefaults.disabled"
+                          :color="downloadBtnSettings[item.id]?.color || downloadBtnDefaults.color">
+                          <v-icon v-if="downloadBtnSettings[item.id]?.icon" small v-text="downloadBtnSettings[item.id]?.icon"></v-icon>
                             <span v-else>
                               {{ downloadBtnSettings[item.id]?.text || downloadBtnDefaults.text}}
                             </span>
-                          </v-btn>
-                        </template>
+                        </v-btn>
+                      </template>
                     </v-select>
                   </section>
                 </span>
                 </FeathersVuexFind>
               </span>
             </template>
-            <!--<template v-slot:item.actions="{ item }">
-              <v-btn
-                v-if="hasRole('admin, ra, ga') && item.metadata.duration > 0"
-                small
-                color="msu white--text"
-                @click="showDiaryDetail(item)">
-                View
-              </v-btn>
+            <!--<template v-slot:item.hidden="{ item }">
+              <v-icon small class="black--text">
+                {{ (item.hidden) ? 'fa-eye-slash' : '' }}
+              </v-icon>
             </template>-->
             <template v-slot:footer.prepend>
               <v-btn
