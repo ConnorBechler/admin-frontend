@@ -53,14 +53,14 @@
             v-model="selected"
             :headers="[
             //{text: 'S', value: 'metadata.editingStatus', width: '10%', align: 'center', sortable: false},
-            {text: 'SID', value: 'subjectId', width: '20%', sortable: false},
+            {text: 'SID', value: 'subjectId', width: '30%', sortable: false},
             /* {text: 'Pub', value: 'permissionShare', width: '10%', align: 'center', sortable: false},
             {text: 'Feat', value: 'metadata.interesting', width: '10%', align: 'center', sortable: false},
             {text: 'Category', value: 'participantCategory', width: '10%', sortable: false}, */
-            {text: 'Diary #', value: 'dateCode', width: '20%', align: 'start', sortable: false},
-            {text: 'Duration', value: 'metadata.duration', width: '10%', align: 'start', sortable: false},
-            {text: '',value: 'audio', width: '40%',align:'end',sortable: false},
-            //{text: '', value: 'actions', width: '5%', sortable: false},
+            {text: 'Diary #', value: 'dateCode', width: '30%', align: 'start', sortable: false},
+            {text: 'Duration', value: 'metadata.duration', width: '20%', align: 'start', sortable: false},
+            {text: '',value: 'audio', width: '20%',align:'end',sortable: false},
+            {text: '', value: 'actions', width: '10%', sortable: false},
             //{text: '', value: 'hidden', width: '5%', align: ($vuetify.breakpoint.smAndDown || !showHiddenDiaries) ? ' d-none' : '', sortable: false},
             ]"
             :items="diaries"
@@ -77,6 +77,7 @@
             loading-text="Loading Recordings..."
             height="70vh"
             class="elevation-1"
+            item-selectable="selectable"
             show-select
             return-object>
             <template v-slot:progress>
@@ -105,6 +106,14 @@
                   color="msu hover-1"
                   class="pt-5 mx-5">
                 </v-switch>-->
+                <v-icon class="white--text">
+                  {{ 'fa-bars' }}
+                </v-icon>
+                <v-switch
+                  v-model="showDeleteButton"
+                  color="red"
+                  class="pt-5 mx-5">
+                </v-switch>
               </v-toolbar>
             </template>
             <template v-slot:item.subjectId="{ item }">
@@ -144,12 +153,7 @@
             <template v-slot:item.metadata.duration="{ item }">
               {{ toSexagesimal((item.metadata.duration) ? item.metadata.duration : 0, 'seconds') }}
             </template>
-            <!--<template v-slot:item.hidden="{ item }">
-              <v-icon small class="black--text">
-                {{ (item.hidden) ? 'fa-eye-slash' : '' }}
-              </v-icon>
-            </template>
-            <template v-slot:item.metadata.interesting="{ item }">
+            <!--<template v-slot:item.metadata.interesting="{ item }">
               <v-icon class="black--text" color="msu">
                 {{ (item.metadata.interesting) ? 'far fa-grin-stars' : '' }}
               </v-icon>
@@ -202,7 +206,7 @@
                         :src="`/audio/${audRec[0].id}.mp3`"
                         type="audio/mp3">
                     </audio>
-                    </div>-->
+                    </div>
                     <v-select
                       :id="`${item.id}-audioDownloadOptions`"
                       v-model="selectedAudioDownloadOption[item.id]"
@@ -218,7 +222,7 @@
                           small
                           class="controls-row mr-2"
                           style="width: 10em"
-                          @click.native.stop="selectedAudioDownloadOption[item.id]?.type === 'original' ? downloader('/api/download/' + audRec[0].id, item.id) : convertAudio(selectedAudioDownloadOption[item.id])"
+                          @click.native.stop="selectedAudioDownloadOption[item.id]?.type === 'original' ? downloader('/api/download/' + audRec[0].id, item.id) : convertAudio(audRec[0].id, selectedAudioDownloadOption[item.id])"
                           :loading="downloadBtnSettings[item.id]?.isDownloading || downloadBtnDefaults.disabled"
                           :disabled="!selectedAudioDownloadOption[item.id]?.type
                             || downloadBtnSettings[item.id]?.isDownloading
@@ -231,8 +235,9 @@
                             </span>
                         </v-btn>
                       </template>
-                    </v-select>
+                    </v-select>-->
                   </section>
+                  <section v-else>No audio found<v-icon class="ml-3" color="msu accent-orange">{{ 'fa-exclamation-circle' }}</v-icon></section>
                 </span>
                 </FeathersVuexFind>
               </span>
@@ -242,6 +247,16 @@
                 {{ (item.hidden) ? 'fa-eye-slash' : '' }}
               </v-icon>
             </template>-->
+            <template v-slot:item.actions="{ item }">
+              <v-icon
+                v-if="hasRole('admin, ra, ga') && (showDeleteButton)"
+                small
+                class="mr-3"
+                color="red"
+                @click="removeDiary(item)">
+                fa-trash
+              </v-icon>
+            </template>
             <template v-slot:footer.prepend>
               <v-btn
                 small
@@ -253,6 +268,43 @@
                 Refresh
                 <v-icon small right>fa-refresh</v-icon>
               </v-btn>
+              <div class="ml-5">
+              <FeathersVuexFind v-if="selected"
+              v-slot="{ items: audRecs, isFindPending: recordingIsLoading }" service="documents" :params="{ query: {parentId : {$in : selected.map(value => value.id)}, $or : [ { fileext: 'mp4' }, { fileext: 'm4a' }, { fileext: 'mp3' }, { fileext: 'wav' }, { fileext: 'webm' }, { fileext: 'ogg' }, { fileext: 'flac' }, ],} }">
+                <span v-if="recordingIsLoading">Audio loading...</span>
+                <span v-else>
+                  <v-select
+                    :id="`bulkAudioDownloadOptions`"
+                    v-model="selectedBulkAudioDownloadOption"
+                    name="selectedBulkAudioDownloadOption"
+                    label="Download selected audio as..."
+                    :return-object="true"
+                    :items="bulkAudioDownloadOptions()"
+                    @click.native.stop
+                    >
+                    <template v-slot:append-outer>
+                      <v-btn
+                        :id="`bulkAudioDownloadBtn`"
+                        small
+                        class="controls-row mr-2"
+                        style="width: 10em"
+                        @click.native.stop="selectedBulkAudioDownloadOption?.type === 'original' ? bulkDownloader(audRecs) : bulkConvertAudio(audRecs, selectedBulkAudioDownloadOption)"
+                        :loading="bulkDownloadBtnSettings?.isDownloading || downloadBtnDefaults.disabled"
+                        :disabled="!selectedBulkAudioDownloadOption?.type
+                          || bulkDownloadBtnSettings?.isDownloading
+                          || bulkDownloadBtnSettings?.disabled
+                          || audRecs.length==0"
+                        :color="bulkDownloadBtnSettings?.color || downloadBtnDefaults.color">
+                        <v-icon v-if="bulkDownloadBtnSettings?.icon" small v-text="bulkDownloadBtnSettings?.icon"></v-icon>
+                          <span v-else>
+                            {{ bulkDownloadBtnSettings?.text || downloadBtnDefaults.text}}
+                          </span>
+                      </v-btn>
+                    </template>
+                  </v-select>
+                </span>
+                </FeathersVuexFind>
+                </div>
             </template>
           </v-data-table>
         </v-col>
@@ -291,7 +343,9 @@ export default {
   data() {
     return {
       diaries: [],
+      selected: [],
       showHiddenDiaries: false,
+      showDeleteButton: false,
       searchString: null,
       showEditor: false,
       editedObj: new this.$FeathersVuex.api.Profile(),
@@ -310,9 +364,11 @@ export default {
         playing: false,
         paused: false,
       },
-      selectedAudioDownloadOption: {},
-      selectedTranscriptDownloadOption: {},
-      downloadBtnSettings: {},
+      //selectedAudioDownloadOption: {},
+      selectedBulkAudioDownloadOption: {},
+      //selectedTranscriptDownloadOption: {},
+      //downloadBtnSettings: {},
+      bulkDownloadBtnSettings: {},
       downloadBtnDefaults: {
         text: 'Download',
         color: 'msu light-grey',
@@ -326,6 +382,9 @@ export default {
     ...appComputed,
     showHiddenDiariesIcon() {
       return (this.showHiddenDiaries) ? 'fa-eye' : 'fa-eye-slash';
+    },
+    showDeleteDiariesIcon() {
+      return (this.showDeleteButton) ? 'fa-trash' : 'fa-trash-slash';
     },
   },
   methods: {
@@ -382,7 +441,25 @@ export default {
       });
       return ret;
     },
-    convertAudio({id, type, raw = false, redact = false, transcriptionId = null}) {
+    bulkAudioDownloadOptions() {
+      const ret = [];
+      ret.push({
+        text: 'Original',
+        type: 'original',
+      });
+      ret.push({
+        //audRecs: audRecs,
+        text: 'WAV',
+        type: 'wav',
+      });
+      ret.push({
+        //audRecs: audRecs,
+        text: 'MP3',
+        type: 'mp3',
+      });
+      return ret;
+    },
+    /* convertAudio(id, {type, raw = false, redact = false, transcriptionId = null}) {
       const options = {};
       options.to = type;
       options.channels = 1;
@@ -394,13 +471,27 @@ export default {
       }
 
       this.downloader('/api/audio/' + id, this.id, options);
+    }, */
+    bulkConvertAudio(audRecs, {type, raw = false, redact = false, transcriptionId = null}) {
+      const options = {};
+      options.to = type;
+      options.channels = 1;
+      options.redact = redact;
+      options.raw = raw;
+
+      if (options.redact && transcriptionId) {
+        options.transcriptionId = transcriptionId;
+      }
+
+      this.bulkDownloader(audRecs, options);
     },
-    downloader(uri, sourceId, options) {
+    /* downloader(uri, sourceId, options) {
+      console.log(uri)
 
       this.updateDownloadBtnSettings(sourceId, 'isCompleted', false);
       this.updateDownloadBtnSettings(sourceId, 'isDownloading', true);
       this.updateDownloadBtnSettings(sourceId, 'error', '');
-      
+      console.log(options)
       axios.get(uri, {
         params: options,
         paramsSerializer: params => {
@@ -452,10 +543,77 @@ export default {
           Promise.resolve(true);
         }, 3000);
       })
+    }, */
+    bulkDownloader(audRecs, options) {
+      
+      this.bulkDownloadBtnSettings['isCompleted'] =  false;
+      this.bulkDownloadBtnSettings['isDownloading'] = true;
+      this.bulkDownloadBtnSettings['error'] = '';
+      for (let i = 0; i < audRecs.length; i++) {
+        // currently just brute force check if the diary has duration; if not, don't download.
+        // this is crude, but should technically never be ebcountered(?)
+        if (this.selected[i].metadata.duration > 0) {
+          let uri = '/api/audio/' + audRecs[i].id
+          if (options===undefined) {uri = '/api/download/' + audRecs[i].id}
+          //console.log(uri)
+          axios.get(uri, {
+            params: options,
+            paramsSerializer: params => {
+              return qs.stringify(params)
+            },
+            headers: {
+              Authorization: this.$store.state.auth.accessToken,
+              // block cache as location doesn't change, but content can
+              'Cache-Control': 'no-cache',
+              'Pragma': 'no-cache',
+              'Expires': '0',
+            },
+            responseType: 'arraybuffer',
+          })
+          .then((resp) => {
+            this.bulkDownloadBtnSettings['isDownloading'] =  false;
+            this.bulkDownloadBtnSettings['disabled'] = true;
+            this.bulkDownloadBtnSettings['text'] = '';
+            this.bulkDownloadBtnSettings['icon'] = 'fa-check-circle';
+            var blob = new Blob([resp.data],{type:resp.headers['content-type']});
+            var link = document.createElement('a');
+            link.href = window.URL.createObjectURL(blob);
+            link.target = "_blank"
+            link.download = resp.headers['x-filename'];
+            link.click();
+            setTimeout(() => {
+              this.bulkDownloadBtnSettings['text'] = 'Download';
+              this.bulkDownloadBtnSettings['icon'] = '';
+              this.bulkDownloadBtnSettings['disabled'] = false;
+              this.bulkDownloadBtnSettings['isCompleted'] = true;
+              Promise.resolve(true);
+            }, 2000);
+            
+          })
+          .catch((err) => {
+            //console.log(err)
+            const errorData = err.response.data instanceof ArrayBuffer
+              ? JSON.parse(new TextDecoder('utf-8').decode(err.response.data))
+              : err.response.data
+            this.bulkDownloadBtnSettings['error'] = { color: 'red', message: errorData.message };
+            this.bulkDownloadBtnSettings['isDownloading'] = false;
+            this.bulkDownloadBtnSettings['disabled'] = false;
+            this.bulkDownloadBtnSettings['text'] = '';
+            this.bulkDownloadBtnSettings['icon'] = 'fa-exclamation-circle';
+            this.bulkDownloadBtnSettings['color'] = 'msu accent-orange';
+            setTimeout(() => {
+              this.bulkDownloadBtnSettings['text'] = 'Download';
+              this.bulkDownloadBtnSettings['icon'] = '';
+              this.bulkDownloadBtnSettings['color'] = '';
+              Promise.resolve(true);
+            }, 3000);
+          })
+        }
+      }      
     },
-    updateDownloadBtnSettings(sourceId, key, value) {
+    /* updateDownloadBtnSettings(sourceId, key, value) {
       this.$set(this.downloadBtnSettings, sourceId, { ...this.downloadBtnSettings[sourceId], [key]: value });
-    },
+    }, */
     showDiaryDetail(obj) {
       let routeData = this.$router.resolve({ name: 'adminDiaryDetails', params: { id: obj.id } });
       window.open(routeData.href, '_blank');
@@ -469,6 +627,80 @@ export default {
       this.showEditor = false;
       this.editorTitle = 'Edit Details';
       this.editedObj = new this.$FeathersVuex.api.Profile();
+    },
+    removeDiary(obj) {
+      if (obj.id) {
+        feathersClient.service('adminMaintenance').create({
+          action: 'diary:remove',
+          id: obj.id,
+          actuallyDelete: false,
+        })
+        .then((ret) => {
+          this.$confirm(`Are you extra sure? This will delete the diary from the file system and database.`, 
+            {
+              title: 'Delete all diary data',
+              icon: 'fas fa-question',
+              color: 'msu',
+              buttonTrueText: 'Yes',
+              buttonFalseText: 'Whoops',
+            })
+            .then((conf) => {
+              if (conf) {
+                feathersClient.service('adminMaintenance').create({
+                  action: 'diary:remove',
+                  id: obj.id,
+                  actuallyDelete: true,
+                })
+                .then((ret) => {
+                  this.$store.dispatch('alert/display',
+                    {
+                      type: 'success',
+                      message: 'Removed Diary and files!',
+                      timeout: 1000,
+                      icon: 'fa-thumbs-up',
+                    },
+                    { root: true });
+                    this.getDiariesList();
+                })
+                .catch((err) => {
+                  //this.removeDiaryError = true;
+                  this.$store.dispatch('alert/display',
+                    {
+                      type: 'error',
+                      message: err.message,
+                      timeout: 2500,
+                      icon: 'fa-exclamation',
+                    },
+                    { root: true });
+                  setTimeout(() => {
+                    //this.removeDiaryBtn.text = 'Delete Diary';
+                    //this.removeDiaryBtn.disabled = false;
+                    Promise.resolve(true);
+                  }, 500);
+                });
+              } else {
+                //this.removeDiaryBtn.text = 'Delete Diary';
+                //this.removeDiaryBtn.disabled = false;
+              }
+            });
+        })
+        .catch((err) => {
+          //this.removeDiaryError = true;
+          this.$store.dispatch('alert/display',
+            {
+              type: 'error',
+              message: err.message,
+              timeout: 2500,
+              icon: 'fa-exclamation',
+            },
+            { root: true });
+          setTimeout(() => {
+            //this.removeDiaryBtn.text = 'Delete Diary';
+            //this.removeDiaryBtn.disabled = false;
+            Promise.resolve(true);
+          }, 500);
+        });
+      }
     },
   },
   watch: {

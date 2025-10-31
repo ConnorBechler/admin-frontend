@@ -119,6 +119,16 @@
                 <v-btn type="button" small class="add-row" @click="addObj">
                   Add Subject
                 </v-btn>
+                <v-btn
+                  small
+                  @click.stop="downloader"
+                  :loading="isDownloading"
+                  :disabled="isDownloading || fileDownloadBtn.disabled"
+                  :color="fileDownloadBtn.color"
+                  class="ml-5">
+                  {{ fileDownloadBtn.text }}
+                  <v-icon small right v-html="fileDownloadBtn.icon"></v-icon>
+                </v-btn>
               </v-col>
             </template>
             <template v-slot:item.actions="{ item }">
@@ -159,6 +169,7 @@
 
 <script>
 /* eslint-disable */
+import axios from 'axios';
 import { makeFindMixin, makeGetMixin } from 'feathers-vuex';
 import { authComputed, appComputed } from '@/store/helpers';
 import feathersClient from '@/plugins/feathers-client';
@@ -194,6 +205,13 @@ export default {
         itemsPerPage: 15,
         page: 1,
       },
+      fileDownloadBtn: {
+        text: 'Download',
+        icon: 'fa-cloud-download-alt',
+        disabled: false,
+      },
+      isDownloading: false,
+      isCompleted: false,
     };
   },
   computed: {
@@ -246,6 +264,39 @@ export default {
             clone.remove();
           }
         });
+    },
+    downloader() {
+      let action = 'reports:allSubjectsWithDemo';
+      this.isCompleted = false;
+      this.isDownloading = true;
+      axios.get('/api/reporting', {
+        params: { action },
+        headers: {
+          Authorization: this.$store.state.auth.accessToken,
+          // block cache as location doesn't change, but content can
+          'Cache-Control': 'no-cache',
+          'Pragma': 'no-cache',
+          'Expires': '0',
+        },
+        responseType: 'arraybuffer',
+      })
+      .then((resp) => {
+        var blob = new Blob([resp.data],{type:resp.headers['content-type']});
+        var link = document.createElement('a');
+        link.href = window.URL.createObjectURL(blob);
+        link.target = "_blank"
+        link.download = resp.headers['x-filename'];
+        link.click();
+        setTimeout(() => {
+          this.isDownloading=false;
+          this.isCompleted=true;
+          Promise.resolve(true);
+        }, 1000);
+      })
+      .catch((err) => {
+        this.isDownloading=false;
+        console.log('err', err);
+      });
     },
     requestAnimationFrame() {
       this.$refs.editorObserver.reset();
