@@ -126,7 +126,12 @@
             <template v-slot:item.participantCategory="{ item }">
               <span v-if="item.profile.subjectId">
                 <!--- temporary workaround for list not updating after dialog editor adds sid --->
-                {{ item.participantCategory !== '' ? item.participantCategory : $FeathersVuex.api.Subject.getFromStore(item.profile.subjectId).metadata.participant_category }}
+                {{ item.participantCategory !== ''
+                  ? item.participantCategory
+                  : (typeof ($FeathersVuex.api.Subject.getFromStore(item.profile.subjectId)?.metadata?.participant_category || '') === 'object'
+                    ? ($FeathersVuex.api.Subject.getFromStore(item.profile.subjectId)?.metadata?.participant_category || '').join(', ')
+                    : ($FeathersVuex.api.Subject.getFromStore(item.profile.subjectId)?.metadata?.participant_category || ''))
+                }}
               </span>
             </template>
             <template v-slot:item.metadata.duration="{ item }">
