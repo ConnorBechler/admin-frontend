@@ -12,7 +12,7 @@ export default [
       },
       beforeResolve(to, from, next) {
         if (store.getters['auth/isAuthenticated']) {
-          next(to.query.redirectFrom || to.params.redirectFrom || { name: (store.getters['auth/isElevated']) ? 'adminHome' : 'home' });
+          next(to.query.redirectFrom || to.params.redirectFrom || { name: (store.getters['auth/isElevated']) ? 'adminHome' : 'basicHome' });
         } else {
           next();
         }

@@ -12,7 +12,7 @@
           <v-card-text>
             <v-row justify="center">
               <v-col cols="12" class="text-body-1 text-center">
-                Choose a Subject with a Manual Profile - OR - Add a New Manual Profile to a Subject<br>
+                Choose a Subject with a Manual Profile <span v-if="isElevated">- OR - Add a New Manual Profile to a Subject</span><br>
               </v-col>
               <FeathersVuexFind service="profiles" :query="{ 'metadata.manual': true, $sort: { subjectId: 1 }, $limit: 99999 }">
                 <v-col cols="12" sm="5" offset-sm="1" class="available-profiles text-center" slot-scope="{ items: profiles, isFindPending: profilesAreLoading }">
@@ -39,7 +39,7 @@
                   </form>
                 </v-col>
               </FeathersVuexFind>
-              <v-col cols="12" sm="6" class="text-center">
+              <v-col v-if="isElevated" cols="12" sm="6" class="text-center">
                 <v-btn
                   class="white black--text"
                   @click.stop="addProfile">

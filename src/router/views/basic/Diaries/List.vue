@@ -81,7 +81,7 @@
             <template v-slot:top>
               <v-toolbar flat class="msu dark-grey text-center white--text">
                 <v-toolbar-title>
-                  <h3>Recent Diaries</h3>
+                  <h3>My Diaries</h3>
                 </v-toolbar-title>
                 <v-text-field
                   v-model="searchString"
@@ -126,12 +126,7 @@
             <template v-slot:item.participantCategory="{ item }">
               <span v-if="item.profile.subjectId">
                 <!--- temporary workaround for list not updating after dialog editor adds sid --->
-                {{ item.participantCategory !== ''
-                  ? item.participantCategory
-                  : (typeof ($FeathersVuex.api.Subject.getFromStore(item.profile.subjectId)?.metadata?.participant_category || '') === 'object'
-                    ? ($FeathersVuex.api.Subject.getFromStore(item.profile.subjectId)?.metadata?.participant_category || '').join(', ')
-                    : ($FeathersVuex.api.Subject.getFromStore(item.profile.subjectId)?.metadata?.participant_category || ''))
-                }}
+                {{ item.participantCategory !== '' ? item.participantCategory : $FeathersVuex.api.Subject.getFromStore(item.profile.subjectId).metadata.participant_category }}
               </span>
             </template>
             <template v-slot:item.metadata.duration="{ item }">
@@ -176,7 +171,7 @@
             </template>
             <template v-slot:item.actions="{ item }">
               <v-btn
-                v-if="hasRole('admin, ra, ga')"
+                v-if="hasRole('admin, ra, ga') || hasMatchingEmail(item.profile.subject.email)"
                 small
                 color="msu white--text"
                 @click="showDiaryDetail(item)">
@@ -210,15 +205,14 @@ import { authComputed, appComputed } from '@/store/helpers';
 import feathersClient from '@/plugins/feathers-client';
 import formatters from '@/mixins/formatters';
 
-
 export default {
   page() {
     return {
-      title: `Admin | Diaries | ${this.$appStrings('appName')}`,
+      title: `Home | My Diaries | ${this.$appStrings('appName')}`,
       meta: [
         {
           name: 'description',
-          content: 'Admin - Diary List',
+          content: 'User - Diary List',
         },
       ],
     };
@@ -269,7 +263,7 @@ export default {
       } else {
         sorter.push(`diaries.createdAt DESC`);
       }
-      this.diaries = await feathersClient.service('adminMaintenance').create({
+      this.diaries = await feathersClient.service('userMaintenance').create({
           action: "diary:getList",
           searchString: this.searchString,
           params: {
@@ -295,7 +289,7 @@ export default {
         })
     },
     showDiaryDetail(obj) {
-      let routeData = this.$router.resolve({ name: 'adminDiaryDetails', params: { id: obj.id } });
+      let routeData = this.$router.resolve({ name: 'basicDiaryDetails', params: { id: obj.id } });
       window.open(routeData.href, '_blank');
     },
     editObj(obj) {

@@ -12,7 +12,7 @@ export const timestamp = (time) => {
 
 export const authComputed = {
   ...mapState('auth', ['ttl', 'isAuthenticatePending']),
-  ...mapGetters('auth', ['isAdmin', 'isAuthenticated', 'isElevated', 'isRA', 'hasRole']),
+  ...mapGetters('auth', ['isAdmin', 'isAuthenticated', 'isElevated', 'isRA', 'hasRole', 'hasMatchingEmail']),
 };
 
 export const userComputed = {
