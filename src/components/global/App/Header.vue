@@ -45,7 +45,7 @@
                   </v-list-item-title>
                 </v-list-item-content>
               </v-list-item>
-              <v-list-item v-if="$route.path.includes('/my') && isElevated" to="/admin">
+              <!--<v-list-item v-if="$route.path.includes('/my') && isElevated" to="/admin">
                 <v-list-item-icon>
                   <v-icon class="white--text" size="18">fa-solid fa-toggle-off</v-icon>
                 </v-list-item-icon>
@@ -64,7 +64,7 @@
                     Admin On
                   </v-list-item-title>
                 </v-list-item-content>
-              </v-list-item>
+              </v-list-item>-->
               <v-list-item v-if="isAuthenticated" to="/logout">
                 <v-list-item-icon>
                   <v-icon class="white--text" size="18">fa-sign-out-alt</v-icon>

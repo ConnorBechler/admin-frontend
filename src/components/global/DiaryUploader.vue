@@ -2,7 +2,7 @@
   <span>
     <ValidationObserver ref="uploadObserver" v-slot="{ invalid, validate }">
       <v-row>
-        <v-col cols="12" md="6">
+        <v-col cols="12" md="4">
           <v-menu
             ref="menu"
             v-model="menu"
@@ -15,12 +15,12 @@
             <template v-slot:activator="{ on }">
               <ValidationProvider
                 :ref="selectedDate"
-                name="Diary Date"
+                name="Recording Date"
                 rules="required|date_format:YYYY-MM-DD"
                 v-slot="{ errors }">
                 <v-text-field
                   v-model="selectedDate"
-                  label="Diary Date"
+                  label="Recording Date"
                   :error-messages="errors"
                   clearable
                   prepend-icon="fa-calendar"
@@ -45,14 +45,14 @@
         <v-col cols="12" md="8">
           <v-file-input :label="(multiple) ? 'Select file(s)' : 'Select a file'" v-model="fileList" :disabled="isUploading" ref="fileInput" name="file" :loading="isUploading" :multiple="multiple" chips></v-file-input>
         </v-col>
-        <v-col cols="12" md="4">
+        <!--<v-col cols="12" md="4">
           <v-switch
             label="Transcribe?"
             v-model="transcribeEnabled"
             :hide-details="true"
             color="msu"
           />
-        </v-col>
+        </v-col>-->
       </v-row>
       <v-row>
         <v-col cols="12" md="2" class="d-flex">
@@ -124,7 +124,7 @@ export default {
       },
       selectedDate: null,
       menu: false,
-      transcribeEnabled: true,
+      transcribeEnabled: false,
       textFileTypes: [
         "txt",
         "tsv",
