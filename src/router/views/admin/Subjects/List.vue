@@ -77,7 +77,7 @@
                 </v-icon>
                 <v-switch
                   v-model="showHiddenSubjects"
-                  color="msu hover-1"
+                  color="msu accent-green"
                   class="pt-5 mx-5">
                 </v-switch>
               </v-toolbar>

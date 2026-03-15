@@ -98,7 +98,7 @@
               v-if="hasRole('admin')"
               small
               class="mr-5"
-              color="msu"
+              color="msu dark-grey"
               @click="editObj(item)">
               fa-pencil-alt
             </v-icon>
